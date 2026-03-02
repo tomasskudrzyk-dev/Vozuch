@@ -1,1 +1,1 @@
-print ("ahoj")
+print ("dobrý den")
