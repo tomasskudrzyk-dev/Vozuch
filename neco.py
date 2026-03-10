@@ -47,6 +47,15 @@ while bezi:
     if ctverec2_x > SIRKA - velikost_ctverce2: #pokud je čtverec2 vpravo od pravé hranice okna
         ctverec2_x = SIRKA - velikost_ctverce2 #nastavení x souřadnice čtverce2 na pravou hranici okna
 
+        #vytvoření čáry uprostřed okna
+        pygame.draw.line(okno, BILA, (SIRKA // 2, 0), (SIRKA // 2, VYSKA), 5) #vykreslení čáry uprostřed okna
+        #vytvoření jedné postranní čáry vlevo a jedné postranní čáry vpravo
+        pygame.draw.line(okno, BILA, (SIRKA // 50, 0), (SIRKA // 50, VYSKA), 5) #vykreslení postranní čáry vlevo
+        pygame.draw.line(okno, BILA, (SIRKA - SIRKA // 50, 0), (SIRKA - SIRKA // 50, VYSKA), 5) #vykreslení postranní čáry vpravo
+        pygame.display.flip() #aktualizace obrazovky
+
+
+
 
         #vykreslení pozadí
         okno.fill(CERNA) #vyplnění pozadí černou barvou
