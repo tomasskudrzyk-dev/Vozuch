@@ -17,6 +17,8 @@ micek_x = SIRKA // 2
 micek_y = VYSKA // 2
 rychlost_micek_x = 5
 rychlost_micek_y = 5
+body_hrace1 = 0
+body_hrace2 = 0
 okno = pygame.display.set_mode((SIRKA, VYSKA))
  #nastavení názvu okna velikosti okna
 pygame.display.set_caption("Ping Pong") #nastavení názvu okna
@@ -32,8 +34,6 @@ while bezi:
         ctverec1_y -= rychlost #posun čtverce nahoru
     if klavesy[pygame.K_s]: #pokud je stisknuta klavesa S
             ctverec1_y += rychlost #posun čtverce dolů
-
-
 
         #čtverec1 se bude nacházet v levé polovině okna
     if ctverec1_x < 0: #pokud je čtverec1 vlevo od levé hranice okna
@@ -72,6 +72,10 @@ while bezi:
             rychlost_micek_y = -rychlost_micek_y #změna směru pohybu míčku v ose y
             #když míček propadne do levé nebo pravé poloviny okna, míček se vrátí do středu okna a nebude se pohybovat
         if micek_x < 0 or micek_x > SIRKA: #pokud je míček vlevo od levé hranice okna nebo vpravo od pravé hranice okna
+            if micek_x < 0: #pokud je míček vlevo od levé hranice okna
+                body_hrace2 += 1 #přidání bodu hráči 2
+            else: #pokud je míček vpravo od pravé hranice okna
+                body_hrace1 += 1 #přidání bodu hráči 1
             micek_x = SIRKA // 2 #nastavení x souřadnice míčku na střed okna
             micek_y = VYSKA // 2 #nastavení y souřadnice míčku na střed okna
             rychlost_micek_x = 0 #nastavení rychlosti míčku v ose x na 0
@@ -86,12 +90,35 @@ while bezi:
         if (ctverec1_x < micek_x < ctverec1_x + velikost_ctverce1 and ctverec1_y < micek_y < ctverec1_y + velikost_ctverce1) or (ctverec2_x < micek_x < ctverec2_x + velikost_ctverce2 and ctverec2_y < micek_y < ctverec2_y + velikost_ctverce2): #pokud je míček uvnitř čtverce1 nebo čtverce2
             rychlost_micek_x = -rychlost_micek_x #změna směru pohybu míčku v ose x
 
+        #vytvoření skóre pro oba hráče s počáteční hodnotou 0
+        skore1 = pismo.render(f"Hráč 1: {body_hrace1}", True, BILA) #vytvoření textu pro skóre hráče 1
+        skore2 = pismo.render(f"Hráč 2: {body_hrace2}", True, BILA) #vytvoření textu pro skóre hráče 2
+        okno.blit(skore1, (140, 10)) #vykreslení skóre hráče 1 na obrazovku
+        okno.blit(skore2, (SIRKA - 240, 10)) #vykreslení skóre hráče 2 na obrazovku
+
+        #po získání 20 bodů jedním z hráčů se zobrazí zpráva o vítězství a hra poté napíše "Stiskněte mezerník pro restartování hry"
+        if body_hrace1 >= 20: #pokud hráč 1 získá 20 nebo více bodů
+            vyhra1 = pismo.render("Hráč 1 vyhrál! Gratulujeme!", True, BILA) #vytvoření textu pro vítězství hráče 1
+            restart = pismo.render("Stiskněte mezerník pro restartování hry", True, BILA) #vytvoření textu pro restartování hry
+        if body_hrace2 >= 20: #pokud hráč 2 získá 20 nebo více bodů
+            vyhra2 = pismo.render("Hráč 2 vyhrál! Gratulujeme!", True, BILA) #vytvoření textu pro vítězství hráče 2
+            restart = pismo.render("Stiskněte mezerník pro restartování hry", True, BILA) #vytvoření textu pro restartování hry
+        if body_hrace1 >= 20: #pokud hráč 1 získá 20 nebo více bodů
+            okno.blit(vyhra1, (SIRKA // 2 - vyhra1.get_width() // 2, VYSKA // 2 - vyhra1.get_height() // 2 - 20)) #vykreslení zprávy o vítězství hráče 1 na obrazovku
+            okno.blit(restart, (SIRKA // 2 - restart.get_width() // 2, VYSKA // 2 - restart.get_height() // 2 + 20)) #vykreslení zprávy o restartování hry na obrazovku
+        if body_hrace2 >= 20: #pokud hráč 2 získá 20 nebo více bodů
+            okno.blit(vyhra2, (SIRKA // 2 - vyhra2.get_width() // 2, VYSKA // 2 - vyhra2.get_height() // 2 - 20)) #vykreslení zprávy o vítězství hráče 2 na obrazovku
+            okno.blit(restart, (SIRKA // 2 - restart.get_width() // 2, VYSKA // 2 - restart.get_height() // 2 + 20)) #vykreslení zprávy o restartování hry na obrazovku
+            pygame.display.flip() #aktualizace obrazovky
+
 
         #vytvoření čáry uprostřed okna
         pygame.draw.line(okno, BILA, (SIRKA // 2, 0), (SIRKA // 2, VYSKA), 5) #vykreslení čáry uprostřed okna
         #vytvoření jedné postranní čáry vlevo a jedné postranní čáry vpravo
         pygame.draw.line(okno, BILA, (SIRKA // 50, 0), (SIRKA // 50, VYSKA), 5) #vykreslení postranní čáry vlevo
         pygame.draw.line(okno, BILA, (SIRKA - SIRKA // 50, 0), (SIRKA - SIRKA // 50, VYSKA), 5) #vykreslení postranní čáry vpravo
+        #vytvoření středového kruhu
+        pygame.draw.circle(okno, BILA, (SIRKA // 2, VYSKA // 2), 75, 5) #vykreslení středového kruhu s poloměrem 75 a tloušťkou čáry 5
         pygame.display.flip() #aktualizace obrazovky
 
         #vykreslení pozadí
@@ -101,6 +128,4 @@ while bezi:
     pygame.draw.rect(okno, BILA, (ctverec2_x, ctverec2_y, velikost_ctverce2, velikost_ctverce2)) #vykreslení druhého čtverce
     #regulace FPS
     hodiny.tick(60) #nastavení FPS na 60
-    pygame.display.flip() #aktualizace obrazovky
-    #vykrerslení okna
 pygame.quit() #ukončení pygame
