@@ -96,20 +96,36 @@ while bezi:
         okno.blit(skore1, (140, 10)) #vykreslení skóre hráče 1 na obrazovku
         okno.blit(skore2, (SIRKA - 240, 10)) #vykreslení skóre hráče 2 na obrazovku
 
-        #po získání 20 bodů jedním z hráčů se zobrazí zpráva o vítězství a hra poté napíše "Stiskněte mezerník pro restartování hry"
+        #po získání 20 bodů jedním z hráčů se zobrazí zpráva o vítězství a hra poté napíše "Stiskněte klávesu R pro restartování hry"
         if body_hrace1 >= 20: #pokud hráč 1 získá 20 nebo více bodů
             vyhra1 = pismo.render("Hráč 1 vyhrál! Gratulujeme!", True, BILA) #vytvoření textu pro vítězství hráče 1
-            restart = pismo.render("Stiskněte mezerník pro restartování hry", True, BILA) #vytvoření textu pro restartování hry
+            restart = pismo.render("Stiskněte klávesu R pro restartování hry", True, BILA) #vytvoření textu pro restartování hry
         if body_hrace2 >= 20: #pokud hráč 2 získá 20 nebo více bodů
             vyhra2 = pismo.render("Hráč 2 vyhrál! Gratulujeme!", True, BILA) #vytvoření textu pro vítězství hráče 2
-            restart = pismo.render("Stiskněte mezerník pro restartování hry", True, BILA) #vytvoření textu pro restartování hry
+            restart = pismo.render("Stiskněte klávesu R pro restartování hry", True, BILA) #vytvoření textu pro restartování hry
         if body_hrace1 >= 20: #pokud hráč 1 získá 20 nebo více bodů
-            okno.blit(vyhra1, (SIRKA // 2 - vyhra1.get_width() // 2, VYSKA // 2 - vyhra1.get_height() // 2 - 20)) #vykreslení zprávy o vítězství hráče 1 na obrazovku
-            okno.blit(restart, (SIRKA // 2 - restart.get_width() // 2, VYSKA // 2 - restart.get_height() // 2 + 20)) #vykreslení zprávy o restartování hry na obrazovku
+            okno.blit(vyhra1, (SIRKA // 2 - vyhra1.get_width() // 2, VYSKA // 4 - vyhra1.get_height() // 2 - 20)) #vykreslení zprávy o vítězství hráče 1 na obrazovku
+            okno.blit(restart, (SIRKA // 2 - restart.get_width() // 2, VYSKA // 4 - restart.get_height() // 2 + 20)) #vykreslení zprávy o restartování hry na obrazovku
         if body_hrace2 >= 20: #pokud hráč 2 získá 20 nebo více bodů
-            okno.blit(vyhra2, (SIRKA // 2 - vyhra2.get_width() // 2, VYSKA // 2 - vyhra2.get_height() // 2 - 20)) #vykreslení zprávy o vítězství hráče 2 na obrazovku
-            okno.blit(restart, (SIRKA // 2 - restart.get_width() // 2, VYSKA // 2 - restart.get_height() // 2 + 20)) #vykreslení zprávy o restartování hry na obrazovku
-            pygame.display.flip() #aktualizace obrazovky
+            okno.blit(vyhra2, (SIRKA // 2 - vyhra2.get_width() // 2, VYSKA // 4 - vyhra2.get_height() // 2 - 20)) #vykreslení zprávy o vítězství hráče 2 na obrazovku
+            okno.blit(restart, (SIRKA // 2 - restart.get_width() // 2, VYSKA // 4 - restart.get_height() // 2 + 20)) #vykreslení zprávy o restartování hry na obrazovku
+            #pokud je po ukázání zprávy o vítězství stisknuta klávesa R, hra se restartuje a skóre se resetuje na 0
+        if (body_hrace1 >= 20 and klavesy[pygame.K_r]) or (body_hrace2 >= 20 and klavesy[pygame.K_r]): #pokud je stisknuta klavesa R
+            body_hrace1 = 0 #reset skóre hráče 1 na 0
+            body_hrace2 = 0 #reset skóre hráče 2 na 0
+            micek_x = SIRKA // 2 #reset pozice míčku v ose x
+            micek_y = VYSKA // 2 #reset pozice míčku v ose y
+            rychlost_micek_x = 0 #reset rychlosti míčku v ose x
+            rychlost_micek_y = 0 #reset rychlosti míčku v ose y
+            #když jeden z hráčů zvítězí, nebude možné pohybovat čtverci a ani míčkem ale objeví se zpráva o vítězství a zpráva o restartování hry, dokud není stisknuta klávesa R pro restartování hry
+        if body_hrace1 >= 20 or body_hrace2 >= 20: #pokud jeden z hráčů získá 20 nebo více bodů
+            ctverec1_x = SIRKA // 2 - velikost_ctverce1 // 2 #nastavení x souřadnice čtverce1 na střed okna
+            ctverec1_y = VYSKA // 2 - velikost_ctverce1 // 2 #nastavení y souřadnice čtverce1 na střed okna
+            ctverec2_x = SIRKA // 2 - velikost_ctverce2 // 2 #nastavení x souřadnice čtverce2 na střed okna
+            ctverec2_y = VYSKA // 2 - velikost_ctverce2 // 2 #nastavení y souřadnice čtverce2 na střed okna
+            #po vítězství jednoho z hráčů nebude možné pohybovat míčkem, po stisknutí klávesy R pro restartování hry se míček vrátí do středu okna a nebude se pohybovat, dokud není stisknut mezerník pro rozpohybování míčku
+            rychlost_micek_x = 0 #nastavení rychlosti míčku v ose x na 0
+            rychlost_micek_y = 0 #nastavení rychlosti míčku v ose y na 0
 
 
         #vytvoření čáry uprostřed okna
