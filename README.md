@@ -6,6 +6,7 @@ Cílem hry je získat co nejvíce bodů tím, že odrazíte míček a zabránít
 Po spuštění hry se míček hned začne pohybovat a hráči musí rychle reagovat, aby ho odrazili.
 
 Ovládání
-Levý čtverec hráč ovládá pomocí kláves W (nahoru) a S (dolů).
-Pravý čtverec hráč ovládá pomocí kláves šipka nahoru (nahoru) a šipka dolů (dolů).
+Levý obdelník hráč ovládá pomocí klávesy W (nahoru) a S (dolů).
+Pravý obdelník hráč ovládá pomocí klávesy šipka nahoru (nahoru) a šipka dolů (dolů).
 Míček se po resetování rozhýbe po stisknutí klavesy mezerník.
+Po stisknutí klávesy R se hra po vítězství jednoho z hráčů restartuje

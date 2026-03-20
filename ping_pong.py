@@ -5,13 +5,13 @@ pygame.init() #inicializace pygame modulu
 SIRKA, VYSKA = 1000, 800 #nastavení rozměrů okna
 CERNA = (0, 0, 0) #Nastavení barev
 BILA = (255, 255, 255)
-velikost_ctverce1 = 50
-ctverec1_x = SIRKA // 2 - velikost_ctverce1 // 2
-ctverec1_y = VYSKA // 2 - velikost_ctverce1 // 2
+velikost_obdelniku1 = 50
+obdelnik1_x = SIRKA // 2 - velikost_obdelniku1 // 2
+obdelnik1_y = VYSKA // 2 - velikost_obdelniku1 // 2
 rychlost = 5
-velikost_ctverce2 = 50
-ctverec2_x = SIRKA // 2 - velikost_ctverce2 // 2
-ctverec2_y = VYSKA // 2 - velikost_ctverce2 // 2
+velikost_obdelniku2 = 50
+obdelnik2_x = SIRKA // 2 - velikost_obdelniku2 // 2
+obdelnik2_y = VYSKA // 2 - velikost_obdelniku2 // 2
 rychlost2 = 5
 micek_x = SIRKA // 2
 micek_y = VYSKA // 2
@@ -31,37 +31,38 @@ while bezi:
             bezi = False #ukončení smyčky
     klavesy = pygame.key.get_pressed() #ziskani stisknutých kláves
     if klavesy[pygame.K_w]: #pokud je stisknuta klavesa W
-        ctverec1_y -= rychlost #posun čtverce nahoru
+        obdelnik1_y -= rychlost #posun obdelníku nahoru
     if klavesy[pygame.K_s]: #pokud je stisknuta klavesa S
-            ctverec1_y += rychlost #posun čtverce dolů
+            obdelnik1_y += rychlost #posun obdelníku dolů
 
-        #čtverec1 se bude nacházet v levé polovině okna
-    if ctverec1_x < 0: #pokud je čtverec1 vlevo od levé hranice okna
-        ctverec1_x = 0 #nastavení x souřadnice čtverce1 na 0
-    if ctverec1_x > SIRKA // 2 - velikost_ctverce1: #pokud je čtverec1 vpravo od středu okna
-        ctverec1_x = SIRKA // 10 - velikost_ctverce1 #nastavení x souřadnice čtverce1 na pravou hranici levé poloviny okna
-        #čtverec se nemůže pohybovat mimo okno
-    if ctverec1_y < 0: #pokud je čtverec1 nad horní hranicí okna
-        ctverec1_y = 0 #nastavení y souřadnice čtverce1 na 0
-    if ctverec1_y > VYSKA - velikost_ctverce1: #pokud je čtverec1 pod dolní hranicí okna
-        ctverec1_y = VYSKA - velikost_ctverce1 #nastavení y souřadnice čtverce1 na dolní hranici okna
-            
-    klavesy2 = pygame.key.get_pressed() #ziskani stisknutých kláves pro druhý čtverec
+        #obdelník1 se bude nacházet v levé polovině okna
+    if obdelnik1_x < 0: #pokud je obdelník1 vlevo od levé hranice okna
+        obdelnik1_x = 0 #nastavení x souřadnice obdelníku1 na 0
+    if obdelnik1_x > SIRKA // 2 - velikost_obdelniku1: #pokud je obdelník1 vpravo od středu okna
+        obdelnik1_x = SIRKA // 10 - velikost_obdelniku1 #nastavení x souřadnice obdelníku1 na pravou hranici levé poloviny okna
+        #obdelník se nemůže pohybovat mimo okno
+    if obdelnik1_y < 0: #pokud je obdelník1 nad horní hranicí okna
+        obdelnik1_y = 0 #nastavení y souřadnice obdelníku1 na 0
+    if obdelnik1_y > VYSKA - 100: #pokud je obdelník1 pod dolní hranicí okna
+        obdelnik1_y = VYSKA - 100 #nastavení y souřadnice obdelníku1 na dolní hranici okna
+
+    klavesy2 = pygame.key.get_pressed() #ziskani stisknutých kláves pro druhý obdelník
     if klavesy2[pygame.K_UP]: #pokud je stisknuta klavesa UP
-        ctverec2_y -= rychlost2 #posun druhého čtverce nahoru
+        obdelnik2_y -= rychlost2 #posun druhého obdelníku nahoru
     if klavesy2[pygame.K_DOWN]: #pokud je stisknuta klavesa DOWN
-        ctverec2_y += rychlost2 #posun druhého čtverce dolů
-        #čtverec se nemůže pohybovat mimo okno
-    if ctverec2_y < 0: #pokud je čtverec2 nad horní hranicí okna
-        ctverec2_y = 0 #nastavení y souřadnice čtverce2 na 0
-    if ctverec2_y > VYSKA - velikost_ctverce2: #pokud je čtverec2 pod dolní hranicí okna
-        ctverec2_y = VYSKA - velikost_ctverce2 #nastavení y souřadnice čtverce2 na dolní hranici okna
+        obdelnik2_y += rychlost2 #posun druhého obdelníku dolů
 
-        #čtverec2 se bude nacházet v pravé polovině okna
-    if ctverec2_x < SIRKA // 1: #pokud je čtverec2 vlevo od středu okna
-        ctverec2_x = SIRKA // 1 #nastavení x souřadnice čtverce2 na střed okna
-    if ctverec2_x > SIRKA - velikost_ctverce2: #pokud je čtverec2 vpravo od pravé hranice okna
-        ctverec2_x = SIRKA - velikost_ctverce2 #nastavení x souřadnice čtverce2 na pravou hranici okna
+        #obdelník se nemůže pohybovat mimo okno
+    if obdelnik2_y < 0: #pokud je obdelník2 nad horní hranicí okna
+        obdelnik2_y = 0 #nastavení y souřadnice obdelníku2 na 0
+    if obdelnik2_y > VYSKA - 100: #pokud je obdelník2 pod dolní hranicí okna
+        obdelnik2_y = VYSKA - 100 #nastavení y souřadnice obdelníku2 na dolní hranici okna
+
+        #obdelník2 se bude nacházet v pravé polovině okna
+    if obdelnik2_x < SIRKA // 1: #pokud je obdelník2 vlevo od středu okna
+        obdelnik2_x = SIRKA // 1 #nastavení x souřadnice obdelníku2 na střed okna
+    if obdelnik2_x > SIRKA - velikost_obdelniku2: #pokud je obdelník2 vpravo od pravé hranice okna
+        obdelnik2_x = SIRKA - velikost_obdelniku2 #nastavení x souřadnice obdelníku2 na pravou hranici okna
 
         #míček se bude nacházet uprostřed okna
         micek_x += rychlost_micek_x #posun míčku v ose x
@@ -86,8 +87,8 @@ while bezi:
             rychlost_micek_x = 5 #nastavení rychlosti míčku v ose x na 5
             rychlost_micek_y = 5 #nastavení rychlosti míčku v ose y na 5
 
-            #míček se odrazí od čtverce1 a čtverce2
-        if (ctverec1_x < micek_x < ctverec1_x + velikost_ctverce1 and ctverec1_y < micek_y < ctverec1_y + velikost_ctverce1) or (ctverec2_x < micek_x < ctverec2_x + velikost_ctverce2 and ctverec2_y < micek_y < ctverec2_y + velikost_ctverce2): #pokud je míček uvnitř čtverce1 nebo čtverce2
+            #míček se odrazí od obdelníku1 a obdelníku2
+        if (obdelnik1_x < micek_x < obdelnik1_x + 20 and obdelnik1_y < micek_y < obdelnik1_y + 100) or (obdelnik2_x < micek_x < obdelnik2_x + 20 and obdelnik2_y < micek_y < obdelnik2_y + 100): #pokud je míček uvnitř obdelníku1 nebo obdelníku2
             rychlost_micek_x = -rychlost_micek_x #změna směru pohybu míčku v ose x
 
         #vytvoření skóre pro oba hráče s počáteční hodnotou 0
@@ -117,16 +118,34 @@ while bezi:
             micek_y = VYSKA // 2 #reset pozice míčku v ose y
             rychlost_micek_x = 0 #reset rychlosti míčku v ose x
             rychlost_micek_y = 0 #reset rychlosti míčku v ose y
-            #když jeden z hráčů zvítězí, nebude možné pohybovat čtverci a ani míčkem ale objeví se zpráva o vítězství a zpráva o restartování hry, dokud není stisknuta klávesa R pro restartování hry
+            #když jeden z hráčů zvítězí, nebude možné pohybovat obdelníkem a ani míčkem ale objeví se zpráva o vítězství a zpráva o restartování hry, dokud není stisknuta klávesa R pro restartování hry
         if body_hrace1 >= 20 or body_hrace2 >= 20: #pokud jeden z hráčů získá 20 nebo více bodů
-            ctverec1_x = SIRKA // 2 - velikost_ctverce1 // 2 #nastavení x souřadnice čtverce1 na střed okna
-            ctverec1_y = VYSKA // 2 - velikost_ctverce1 // 2 #nastavení y souřadnice čtverce1 na střed okna
-            ctverec2_x = SIRKA // 2 - velikost_ctverce2 // 2 #nastavení x souřadnice čtverce2 na střed okna
-            ctverec2_y = VYSKA // 2 - velikost_ctverce2 // 2 #nastavení y souřadnice čtverce2 na střed okna
+            obdelnik1_x = SIRKA // 2 - velikost_obdelniku1 // 2 #nastavení x souřadnice obdelníku1 na střed okna
+            obdelnik1_y = VYSKA // 2 - velikost_obdelniku1 // 2 #nastavení y souřadnice obdelníku1 na střed okna
+            obdelnik2_x = SIRKA // 2 - velikost_obdelniku2 // 2 #nastavení x souřadnice obdelníku2 na střed okna
+            obdelnik2_y = VYSKA // 2 - velikost_obdelniku2 // 2 #nastavení y souřadnice obdelníku2 na střed okna
             #po vítězství jednoho z hráčů nebude možné pohybovat míčkem, po stisknutí klávesy R pro restartování hry se míček vrátí do středu okna a nebude se pohybovat, dokud není stisknut mezerník pro rozpohybování míčku
             rychlost_micek_x = 0 #nastavení rychlosti míčku v ose x na 0
             rychlost_micek_y = 0 #nastavení rychlosti míčku v ose y na 0
 
+                #po získání 10 bodů jedním z hráčů se zobrazí zpráva "Hráč 1 získal 10 bodů!" nebo "Hráč 2 získal 10 bodů!" v závislosti na tom, který hráč získal 10 bodů
+        if body_hrace1 == 10: #pokud hráč 1 získá 10 bodů
+            deset_bodu1 = pismo.render("Hráč 1 získal 10 bodů!", True, BILA) #vytvoření textu pro zprávu o získání 10 bodů hráčem 1
+            okno.blit(deset_bodu1, (SIRKA // 2 - deset_bodu1.get_width() // 2, VYSKA // 4 - deset_bodu1.get_height() // 2)) #vykreslení zprávy o získání 10 bodů hráčem 1 na obrazovku
+        if body_hrace2 == 10: #pokud hráč 2 získá 10 bodů
+            deset_bodu2 = pismo.render("Hráč 2 získal 10 bodů!", True, BILA) #vytvoření textu pro zprávu o získání 10 bodů hráčem 2
+            okno.blit(deset_bodu2, (SIRKA // 2 - deset_bodu2.get_width() // 2, VYSKA // 4 - deset_bodu2.get_height() // 2)) #vykreslení zprávy o získání 10 bodů hráčem 2 na obrazovku
+
+            #po odrazu míčku od obdelníku se míček zrychlí +1 v ose x a +1 v ose y
+        if (obdelnik1_x < micek_x < obdelnik1_x + 20 and obdelnik1_y < micek_y < obdelnik1_y + 100) or (obdelnik2_x < micek_x < obdelnik2_x + 20 and obdelnik2_y < micek_y < obdelnik2_y + 100): #pokud je míček uvnitř obdelníku1 nebo obdelníku2
+            if rychlost_micek_x > 0: #pokud se míček pohybuje vpravo
+                rychlost_micek_x += 1 #zvýšení rychlosti míčku v ose x o 1
+            else: #pokud se míček pohybuje vlevo
+                rychlost_micek_x -= 1 #snížení rychlosti míčku v ose x o 1
+            if rychlost_micek_y > 0: #pokud se míček pohybuje dolů
+                rychlost_micek_y += 1 #zvýšení rychlosti míčku v ose y o 1
+            else: #pokud se míček pohybuje nahoru
+                rychlost_micek_y -= 1 #snížení rychlosti míčku v ose y o 1
 
         #vytvoření čáry uprostřed okna
         pygame.draw.line(okno, BILA, (SIRKA // 2, 0), (SIRKA // 2, VYSKA), 5) #vykreslení čáry uprostřed okna
@@ -140,8 +159,8 @@ while bezi:
         #vykreslení pozadí
         okno.fill(CERNA) #vyplnění pozadí černou barvou
 
-    pygame.draw.rect(okno, BILA, (ctverec1_x, ctverec1_y, velikost_ctverce1, velikost_ctverce1)) #vykreslení prvního čtverce
-    pygame.draw.rect(okno, BILA, (ctverec2_x, ctverec2_y, velikost_ctverce2, velikost_ctverce2)) #vykreslení druhého čtverce
+    pygame.draw.rect(okno, BILA, (obdelnik1_x, obdelnik1_y, 20, 100)) #vykreslení prvního čtverce
+    pygame.draw.rect(okno, BILA, (obdelnik2_x, obdelnik2_y, 20, 100)) #vykreslení druhého čtverce
     #regulace FPS
     hodiny.tick(60) #nastavení FPS na 60
 pygame.quit() #ukončení pygame
