@@ -15,6 +15,8 @@ rychlost = 4
 VELIKOST_JIDLA = 10
 had_x = SIRKA // 2
 had_y = VYSKA // 2
+jidllo_x = SIRKA // 2
+jidlo_y = VYSKA // 2
 # vytvoření okna
 okno = pygame.display.set_mode((SIRKA, VYSKA))
 pygame.display.set_caption("Snake game") #nastavení názvu okna
@@ -39,10 +41,7 @@ while bezi:
     okno.fill(CERNA) #vyplnění pozadí černou barvou
     #had se vykreslí jako zelený obdélník
     pygame.draw.rect(okno, ZELENA, (had_x, had_y, VELIKOST_BLOKU, VELIKOST_BLOKU))
-
-
-
-
+    
     pygame.display.update() #aktualizace obrazovky
 
     #regulace FPS
