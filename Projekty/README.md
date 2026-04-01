@@ -16,4 +16,16 @@ Popis
 V této hře je cílem získat co největší skóre
 
 Ovládání
-Hada hráč ovládá pomocí kláves W (pohyb nahoru), S (dolů), A (doleva), D (doprava)
+Had se pohybuje nahoru po stisknutí klávesy w
+Had se pohybuje dolů po stisknutí klávesy s
+Had se pohybuje doleva po stisknutí klávesy a
+Had se pohybuje doprava po stisknutí klávesy d
+Po kolizi hada s okrajem okna nebo se sebou samým se hra restartuje stisknutím klávesy R
+
+Kvíz hra
+Popis
+V této hře musíte odpovědět na co nejvíce otázek správně
+
+Ovládání
+Mezerníkem hráč přepne úvodní text a vstoupí do hry a také přepíná otázky
+
