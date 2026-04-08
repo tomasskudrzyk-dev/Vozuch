@@ -12,6 +12,8 @@ CERVENA = (255, 0, 0) #nastavení barvy špatné odpovědi
 aktualni_otazka = None #proměnná pro aktuální otázku
 vybrana_odpoved = None #proměnná pro vybranou odpověď
 vysledek = None #proměnná pro výsledek odpovědi
+cas_vyhodnoceni = 0 #proměnná pro čas vyhodnocení odpovědi
+skore = 0 #proměnná pro skóre
 odpoved_recty = [] #seznam pro ukládání obdélníků odpovědí pro detekci kliknutí
 
 okno = pygame.display.set_mode((SIRKA, VYSKA)) #vytvoření okna
@@ -50,8 +52,28 @@ while bezi:
         
         if udalost.type == pygame.KEYDOWN and udalost.key == pygame.K_SPACE:
             aktualni_otazka = random.choice(otazky)
+            vybrana_odpoved = None
+            vysledek = None
+
         if udalost.type == pygame.QUIT: #pokud uživatel zavře okno
             bezi = False
+
+
+        if udalost.type == pygame.MOUSEBUTTONDOWN:
+            print("klik myši")
+            if aktualni_otazka is not None and vysledek is None:
+                for i, rect in enumerate(odpoved_recty):
+                    if rect.collidepoint(udalost.pos):
+                        print("klik na odpověď", i)
+                        vybrana_odpoved = i
+                    
+                        if vybrana_odpoved == aktualni_otazka["spravna"]:
+                            vysledek = True
+                            skore += 1
+                        else:
+                            vysledek = False
+
+                        cas_vyhodnoceni = pygame.time.get_ticks()
 
     #vykreslení pozadí
     okno.fill(CERNA)
@@ -67,15 +89,23 @@ while bezi:
         text = pismo.render(aktualni_otazka["otazka"], True, BILA)
         okno.blit(text, (SIRKA // 2 - text.get_width() // 2, VYSKA // 2 - 50))
 
+        #výběr odpovědi pomocí myšky
         odpoved_recty = []
         for i, odpoved in enumerate(aktualni_otazka["odpovedi"]):
             text = pismo.render(odpoved, True, BILA)
-            rect = text.get_rect(center=(SIRKA // 2, VYSKA // 2 + i * 30))
+            rect = text.get_rect(center=(SIRKA // 2, VYSKA // 2 + 50 + i * 40))
+            
+            barva = BILA
+            if vysledek is None:
+                if rect.collidepoint(pygame.mouse.get_pos()):
+                    barva = SEDA
+            elif i == aktualni_otazka["spravna"]:
+                barva = ZELENA
+            elif i == vybrana_odpoved:
+                barva = CERVENA
 
-        #hover efekt (kdy se najedete myší na odpověď)
-            if rect.collidepoint(pygame.mouse.get_pos()):
-                text = pismo.render(f" {odpoved}", True, SEDA)
-
+            text = pismo.render(odpoved, True, barva)
+            rect = text.get_rect(center=(SIRKA // 2, VYSKA // 2 + 50 + i * 40))
             okno.blit(text, rect)
             odpoved_recty.append(rect)
 
