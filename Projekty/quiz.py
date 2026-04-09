@@ -109,6 +109,20 @@ while bezi:
             okno.blit(text, rect)
             odpoved_recty.append(rect)
 
+            #po zvolení odpovědi se po 2 sekundách automaticky zobrazí další otázka
+        if vysledek is not None and pygame.time.get_ticks() - cas_vyhodnoceni > 2000:
+            aktualni_otazka = random.choice(otazky)
+            vybrana_odpoved = None
+            vysledek = None
+
+            #vytvoření skóre
+        skore_text = pismo.render(f"Skóre: {skore}", True, BILA)
+        okno.blit(skore_text, (10, 10))
+
+        #když hráč odpoví správně tak získa +1 bod, když odpoví špatně tak ztratí 1 bod
+        if vysledek is True:
+            skore += 1
+
     #aktualizace obrazovky
     pygame.display.flip()
     #regulace FPS
