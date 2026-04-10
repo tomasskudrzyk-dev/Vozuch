@@ -24,8 +24,10 @@ Po kolizi hada s okrajem okna nebo se sebou samým se hra restartuje stisknutím
 
 Kvíz hra
 Popis
-V této hře musíte odpovědět na co nejvíce otázek správně
+V této hře, aby jste vyhráli musíte odpovědet na 10 otázek správně
+Po vybrání odpovědi se otázka automaticky přepne na další
 
 Ovládání
-Mezerníkem hráč přepne úvodní text a vstoupí do hry a také přepíná otázky
+Mezerníkem hráč hráč vstoupí do hry
+Levým tlačítkem na myšce hráč vybírá odpovědi
 

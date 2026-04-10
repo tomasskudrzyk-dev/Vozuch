@@ -15,6 +15,9 @@ vysledek = None #proměnná pro výsledek odpovědi
 cas_vyhodnoceni = 0 #proměnná pro čas vyhodnocení odpovědi
 skore = 0 #proměnná pro skóre
 odpoved_recty = [] #seznam pro ukládání obdélníků odpovědí pro detekci kliknutí
+max_skore = 10
+skore = 0
+konec_hry = False
 
 okno = pygame.display.set_mode((SIRKA, VYSKA)) #vytvoření okna
 pygame.display.set_caption("Quiz") #nastavení názvu okna
@@ -29,7 +32,7 @@ otazky = [
         {"otazka": "Jaký je největší oceán na světě?", "odpovedi": ["a) Atlantský oceán", "b) Indický oceán", "c) Tichý oceán"], "spravna": 2},
         {"otazka": "Kdo namaloval obraz 'Mona Lisa'?", "odpovedi": ["a) Leonardo da Vinci", "b) Pablo Picasso", "c) Vincent van Gogh"], "spravna": 0},
         {"otazka": "Jaká je nejvyšší hora na světě?", "odpovedi": ["a) Mount Everest", "b) K2", "c) Kangchenjunga"], "spravna": 0},
-        {"otazka": "Kdo je prezidentem Spojených států?", "odpovedi": ["a) Joe Biden", "b) Donald Trump", "c) Barack Obama"], "spravna": 0},
+        {"otazka": "Kdo je prezidentem Spojených států?", "odpovedi": ["a) Joe Biden", "b) Donald Trump", "c) Barack Obama"], "spravna": 1},
         {"otazka": "Jaký je největší kontinent na světě?", "odpovedi": ["a) Afrika", "b) Asie", "c) Evropa"], "spravna": 1},
         {"otazka": "Kdo je autorem teorie relativity?", "odpovedi": ["Isaac Newton", "Albert Einstein", "Nikola Tesla"], "spravna": 1},
         {"otazka": "Jaký je největší savec na světě?", "odpovedi": ["a) Slon", "b) Velryba", "c) Žirafa"], "spravna": 1},
@@ -119,9 +122,20 @@ while bezi:
         skore_text = pismo.render(f"Skóre: {skore}", True, BILA)
         okno.blit(skore_text, (10, 10))
 
-        #když hráč odpoví správně tak získa +1 bod, když odpoví špatně tak ztratí 1 bod
-        if vysledek is True:
-            skore += 1
+        #vytvoření loading baru pro zobrazení počtu bodů do max bodů
+        if skore < max_skore:
+            pygame.draw.rect(okno, SEDA, (10, 50, 200, 20))
+            pygame.draw.rect(okno, ZELENA, (10, 50, 200 * (skore / max_skore), 20))
+        else:
+            pygame.draw.rect(okno, ZELENA, (10, 50, 200, 20))
+            #zobrazení zprávy o vítězství, když hráč dosáhne max bodů
+            text = pismo.render("Gratulujeme! Vyhráli jste!", True, ZELENA)
+            okno.blit(text, (SIRKA // 2 - text.get_width() // 2, VYSKA // 2 - text.get_height() // 2))
+
+        #když hráč získá 10 bodů, hra se zastaví
+        if skore >= max_skore:
+            vyhra = pismo.render("Gratulujeme! Vyhráli jste!", True, BILA) #vytvoření textu pro vítězství
+            okno.blit(vyhra, (SIRKA // 2 - vyhra.get_width() // 2, VYSKA // 2 - vyhra.get_height() // 2)) #zobrazení textu vítězství na obrazovce
 
     #aktualizace obrazovky
     pygame.display.flip()
