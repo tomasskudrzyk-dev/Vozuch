@@ -53,10 +53,20 @@ otazky = [
 while bezi:
     for udalost in pygame.event.get(): #zpracování událostí
         
-        if udalost.type == pygame.KEYDOWN and udalost.key == pygame.K_SPACE:
-            aktualni_otazka = random.choice(otazky)
+        if udalost.type == pygame.KEYDOWN:
+
+            if udalost.key == pygame.K_SPACE and not konec_hry:
+                aktualni_otazka = random.choice(otazky)
             vybrana_odpoved = None
             vysledek = None
+
+            if udalost.type == pygame.KEYDOWN:
+                if udalost.key == pygame.K_RETURN and konec_hry:
+                    skore = 0
+                    konec_hry = False
+                    aktualni_otazka = None
+                    vybrana_odpoved = None
+                    vysledek = None
 
         if udalost.type == pygame.QUIT: #pokud uživatel zavře okno
             bezi = False
@@ -64,7 +74,7 @@ while bezi:
 
         if udalost.type == pygame.MOUSEBUTTONDOWN:
             print("klik myši")
-            if aktualni_otazka is not None and vysledek is None:
+            if aktualni_otazka is not None and vysledek is None and not konec_hry:
                 for i, rect in enumerate(odpoved_recty):
                     if rect.collidepoint(udalost.pos):
                         print("klik na odpověď", i)
@@ -82,7 +92,7 @@ while bezi:
     okno.fill(CERNA)
 
     #pokud není vybrána otázka, zobrazí se úvodní text
-    if aktualni_otazka is None:
+    if aktualni_otazka is None and not konec_hry:
         text = pismo.render("Stiskněte mezerník pro start", True, BILA)
         okno.blit(text, (SIRKA // 2 - text.get_width() // 2, VYSKA // 2 - text.get_height() // 2))
     else:
@@ -113,7 +123,7 @@ while bezi:
             odpoved_recty.append(rect)
 
             #po zvolení odpovědi se po 2 sekundách automaticky zobrazí další otázka
-        if vysledek is not None and pygame.time.get_ticks() - cas_vyhodnoceni > 2000:
+        if vysledek is not None and pygame.time.get_ticks() - cas_vyhodnoceni > 2000 and not konec_hry:
             aktualni_otazka = random.choice(otazky)
             vybrana_odpoved = None
             vysledek = None
@@ -130,12 +140,14 @@ while bezi:
             pygame.draw.rect(okno, ZELENA, (10, 50, 200, 20))
             #zobrazení zprávy o vítězství, když hráč dosáhne max bodů
             text = pismo.render("Gratulujeme! Vyhráli jste!", True, ZELENA)
-            okno.blit(text, (SIRKA // 2 - text.get_width() // 2, VYSKA // 2 - text.get_height() // 2))
+            okno.blit(text, (SIRKA // 2 - text.get_width() // 2, VYSKA // 6 - text.get_height() // 6))
 
         #když hráč získá 10 bodů, hra se zastaví
         if skore >= max_skore:
-            vyhra = pismo.render("Gratulujeme! Vyhráli jste!", True, BILA) #vytvoření textu pro vítězství
-            okno.blit(vyhra, (SIRKA // 2 - vyhra.get_width() // 2, VYSKA // 2 - vyhra.get_height() // 2)) #zobrazení textu vítězství na obrazovce
+            konec_hry = True
+
+            text1 = pismo.render("Stiskněte Enter pro restart", True, BILA)
+            okno.blit(text1, (SIRKA // 2 - text1.get_width() // 2, VYSKA // 4 - text.get_height() // 4)) 
 
     #aktualizace obrazovky
     pygame.display.flip()
