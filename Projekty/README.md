@@ -31,3 +31,10 @@ Ovládání
 Mezerníkem hráč hráč vstoupí do hry
 Levým tlačítkem na myšce hráč vybírá odpovědi
 
+Kalkulačka
+Popis
+Jednoduchá kalkulačka vytvořená v Pythonu pomocí Tkinteru. Umožňuje základní matematické operace jako sčítání, odčítání, násobení, dělení.
+
+Ovládádní
+Čísla se zadávají buď klasicky psaním na klávesnici nebo myškou přímo na kalkulačce
+
