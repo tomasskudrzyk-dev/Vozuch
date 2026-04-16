@@ -52,8 +52,9 @@ tlacitka = [
     ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("/", 1, 3),
     ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("*", 2, 3),
     ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
-    ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("+", 4, 3)
+    ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("+", 4, 3),
 ]
+
 for (text, row, col) in tlacitka:
     tlacitko = tk.Button(okno, text=text, font=pismo, bg=barva_tlacitek, fg=barva_textu, width=5, height=2)
     tlacitko.grid(row=row, column=col, padx=5, pady=5)
@@ -61,9 +62,5 @@ for (text, row, col) in tlacitka:
     tlacitko.bind("<Enter>", lambda e, t=text: hover(e, t))
     tlacitko.bind("<Leave>", lambda e, t=text: unhover(e, t))
 
-    #po kliknutí myškou na číslo se číslo zobrazí v řádku pro výpočet
-    tlacitko.bind("<Button-1>", lambda e, t=text: vstup.insert(tk.END, t))
-
+okno.bind("<BackSpace>", lambda e: vstup.delete(len(vstup.get())-1, tk.END))
 okno.mainloop()
-
-
