@@ -1,7 +1,7 @@
 import tkinter as tk
 
 #nastavení barev
-SIRKA, VYSKA = 600, 500
+SIRKA, VYSKA = 600, 600
 CERNA = "#000000"
 BILA = "#FFFFFF"
 SEDA = "#808080"
@@ -32,6 +32,10 @@ def klik(text):
             vstup.insert(tk.END, "Chyba")
     elif text == "C":
         vstup.delete(0, tk.END)
+    elif text == "DEL":
+        obsah = vstup.get()
+        if len(obsah) > 0:
+            vstup.delete(len(obsah)-1, tk.END)
     else:
         vstup.insert(tk.END, text)
 
@@ -53,6 +57,7 @@ tlacitka = [
     ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("*", 2, 3),
     ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
     ("0", 4, 0), (".", 4, 1), ("=", 4, 2), ("+", 4, 3),
+    ("C", 5, 0), ("DEL", 5, 1),
 ]
 
 for (text, row, col) in tlacitka:
