@@ -28,13 +28,14 @@ V této hře, aby jste vyhráli musíte odpovědet na 10 otázek správně
 Po vybrání odpovědi se otázka automaticky přepne na další
 
 Ovládání
-Mezerníkem hráč hráč vstoupí do hry
+Mezerníkem hráč vstoupí do hry
 Levým tlačítkem na myšce hráč vybírá odpovědi
 
 Kalkulačka
 Popis
 Jednoduchá kalkulačka vytvořená v Pythonu pomocí Tkinteru. Umožňuje základní matematické operace jako sčítání, odčítání, násobení, dělení.
 
-Ovládádní
+Ovládání
 Čísla se zadávají buď klasicky psaním na klávesnici nebo myškou přímo na kalkulačce
+Číslo nebo znak se smaže klávesou BACKSPACE, které se stiskne na klávesnici
 
