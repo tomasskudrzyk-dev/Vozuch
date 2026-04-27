@@ -15,31 +15,44 @@ HRAC_X = "X"
 HRAC_O = "O"
 
 pygame.init()#inicializace pygame modulu
+
 #nastavení velikosti okna
 SIRKA, VYSKA = 1000, 800
 OKNO = pygame.display.set_mode((SIRKA, VYSKA))
+
 #nastavení názvu okna
 pygame.display.set_caption("Tic Tac Toe")
 pismo = pygame.font.SysFont("Arial", 24)
+
 bezi = True
 hodiny = pygame.time.Clock()
-while bezi:
- for udalost in pygame.event.get():
-    if udalost.type == pygame.QUIT:
-        bezi = False
-    #nastavení velikosti políčka
-    VELIKOST_POLICKA = 200
-    #funkce pro vykreslení herního pole
-    def vykresli_pole():
-        OKNO.fill(BILA)
+
+#nastavení velikosti políčka
+VELIKOST_POLICKA = 200
+
+#funkce pro vykreslení herního pole
+def vykresli_pole():
+    OKNO.fill(BILA)
+
+    # Draw vertical lines
     for i in range(1, 3):
-        pygame.draw.line(OKNO, CERNA, (i * VELIKOST_POLICKA, 0), (i * VELIKOST_POLICKA, VYSKA), 5)
-        pygame.draw.line(OKNO, CERNA, (0, i * VELIKOST_POLICKA), (SIRKA, i * VELIKOST_POLICKA), 5)
+        pygame.draw.line(OKNO, CERNA, (i * VELIKOST_POLICKA, 0), (i * VELIKOST_POLICKA, VELIKOST_POLICKA * 3), 5)
+    # Draw horizontal lines
+
+    for i in range(1, 3):
+        pygame.draw.line(OKNO, CERNA, (0, i * VELIKOST_POLICKA), (VELIKOST_POLICKA * 3, i * VELIKOST_POLICKA), 5)
+        
+    # Draw X and O
     for radek in range(3):
         for sloupec in range(3):
             if pole[radek][sloupec] is not None:
                 text = pismo.render(pole[radek][sloupec], True, CERNA)
                 OKNO.blit(text, (sloupec * VELIKOST_POLICKA + 80, radek * VELIKOST_POLICKA + 80))
-                OKNO.fill(BILA)
-pygame.display.flip()
-hodiny.tick(60)
+
+while bezi:
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            bezi = False
+    vykresli_pole()
+    pygame.display.flip()
+    hodiny.tick(60)
