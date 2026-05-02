@@ -39,3 +39,10 @@ Ovládání
 Čísla se zadávají buď klasicky psaním na klávesnici nebo myškou přímo na kalkulačce
 Číslo nebo znak se smaže klávesou BACKSPACE, které se stiskne na klávesnici
 
+Tic-tac-toe
+Popis
+V této hře je za úkolem vytvořit řadu tří stejných symbolů na hrací ploše 3×3. Hrají dva hráči, kteří se střídají a zapisují své symboly (X a O) do volných polí. Řada může být vodorovná, svislá nebo diagonální. Pokud se nepodaří nikomu vytvořit trojici a všechna pole se zaplní, hra končí remízou.
+
+Ovládání
+Hra se ovládá velmi jednoduše – kliknutím levým tlačítkem myši na prázdné pole, kam chce hráč umístit svůj symbol.
+

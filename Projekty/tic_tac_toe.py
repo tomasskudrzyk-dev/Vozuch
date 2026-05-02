@@ -83,6 +83,26 @@ while bezi:
                 if pole[radek][sloupec] is None:
                     pole[radek][sloupec] = aktualni_hrac
                     aktualni_hrac = HRAC_O if aktualni_hrac == HRAC_X else HRAC_X
+
+                    #když jeden z hráčů vyhraje, zobrazí se zpráva a hra se restartuje
+                    if (pole[0][0] == pole[0][1] == pole[0][2] != None or
+                        pole[1][0] == pole[1][1] == pole[1][2] != None or
+                        pole[2][0] == pole[2][1] == pole[2][2] != None or
+                        pole[0][0] == pole[1][0] == pole[2][0] != None or
+                        pole[0][1] == pole[1][1] == pole[2][1] != None or
+                        pole[0][2] == pole[1][2] == pole[2][2] != None or
+                        pole[0][0] == pole[1][1] == pole[2][2] != None or
+                        pole[0][2] == pole[1][1] == pole[2][0] != None):
+                        OKNO.fill(BILA)
+                        text = pismo.render(f"Hráč {pole[radek][sloupec]} vyhrál!", True, CERNA)
+                        text_rect = text.get_rect(center=(SIRKA // 2, VYSKA // 2))
+                        OKNO.blit(text, text_rect)
+                        pygame.display.flip()
+                        pygame.time.wait(2000)
+                        pole = [[None, None, None],
+                                [None, None, None],
+                                [None, None, None]]
+                        
     vykresli_pole()
     pygame.display.flip()
     hodiny.tick(60)
