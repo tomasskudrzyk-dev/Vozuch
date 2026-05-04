@@ -103,6 +103,18 @@ while bezi:
                                 [None, None, None],
                                 [None, None, None]]
                         
+                        #jestli je remíza, zobrazí se zpráva a hra se restartuje
+                    elif all(pole[radek][sloupec] is not None for radek in range(3) for sloupec in range(3)):
+                        OKNO.fill(BILA)
+                        text = pismo.render("Remíza!", True, CERNA)
+                        text_rect = text.get_rect(center=(SIRKA // 2, VYSKA // 2))
+                        OKNO.blit(text, text_rect)
+                        pygame.display.flip()
+                        pygame.time.wait(2000)
+                        pole = [[None, None, None],
+                                [None, None, None],
+                                [None, None, None]]
+                               
     vykresli_pole()
     pygame.display.flip()
     hodiny.tick(60)
