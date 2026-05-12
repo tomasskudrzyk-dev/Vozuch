@@ -44,6 +44,37 @@ pygame.draw.circle(okno, BILA, (SIRKA // 2, VYSKA // 2), 50, 5) # Středový kru
 draw_goal(okno, 50, 300, 50, 200, BILA, SEDA)   # Levá branka
 draw_goal(okno, 900, 300, 50, 200, BILA, SEDA)  # Pravá branka
 
+#Vykreslení 6 fotbalistů, kteří budou rozestaveni na levé polovině hřiště
+for i in range(6):
+    x = random.randint(50, SIRKA // 2 - 50)
+    y = random.randint(100, VYSKA - 100)
+    pygame.draw.circle(okno, CERVENA, (x, y), 20) # Fotbalista jako červený kruh
+    pygame.draw.circle(okno, CERNA, (x, y), 20, 2) # Obrys fotbalisty
+
+    #Každý fotbalista bude mít na sobě napsané jekékoliv číslo od 1 do 99
+    cislo = random.randint(1, 99)
+    text = pismo.render(str(cislo), True, BILA)
+    text_rect = text.get_rect(center=(x, y))
+    okno.blit(text, text_rect)
+
+#Vykreslení 6 fotbalistů, kteří budou rozestaveni na pravé polovině hřiště
+for i in range(6):
+    x = random.randint(SIRKA // 2 + 50, SIRKA - 50)
+    y = random.randint(100, VYSKA - 100)
+    pygame.draw.circle(okno, BILA, (x, y), 20) # Fotbalista jako modrý kruh
+    pygame.draw.circle(okno, CERNA, (x, y), 20, 2) # Obrys fotbalisty
+
+    #Každý fotbalista bude mít na sobě napsané jekékoliv číslo od 1 do 99
+    cislo = random.randint(1, 99)
+    text = pismo.render(str(cislo), True, CERVENA)
+    text_rect = text.get_rect(center=(x, y))
+    okno.blit(text, text_rect)
+
+    #přidání scoreboardu
+scoreboard_text = pismo.render("Skóre: 0 - 0", True, BILA)
+scoreboard_rect = scoreboard_text.get_rect(center=(SIRKA // 2, 30))
+okno.blit(scoreboard_text, scoreboard_rect)
+
 #Hlavní herní smyčka
 bezi = True
 while bezi:
