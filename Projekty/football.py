@@ -39,6 +39,12 @@ def draw_goal(surface, x, y, width, height, frame_color, net_color):
 pygame.draw.rect(okno, BILA, (50, 50, 900, 700), 5) # Hřiště
 pygame.draw.line(okno, BILA, (SIRKA // 2, 50), (SIRKA // 2, 750), 5) # Středová čára
 pygame.draw.circle(okno, BILA, (SIRKA // 2, VYSKA // 2), 50, 5) # Středový kruh
+#Vykreslení vápna
+pygame.draw.rect(okno, BILA, (50, 250, 150, 300), 5) # Levé vápno
+pygame.draw.rect(okno, BILA, (800, 250, 150, 300), 5) # Pravé vápno
+#Vykreslení malého vápna
+pygame.draw.rect(okno, BILA, (50, 325, 75, 150), 5) # Levé malé vápno
+pygame.draw.rect(okno, BILA, (875, 325, 75, 150), 5) # Pravé malé vápno
 
 # Brankové konstrukce
 draw_goal(okno, 50, 300, 50, 200, BILA, SEDA)   # Levá branka
@@ -74,6 +80,10 @@ for i in range(6):
 scoreboard_text = pismo.render("Skóre: 0 - 0", True, BILA)
 scoreboard_rect = scoreboard_text.get_rect(center=(SIRKA // 2, 30))
 okno.blit(scoreboard_text, scoreboard_rect)
+
+#Vykreslení míče uprostřed hřiště
+pygame.draw.circle(okno, BILA, (SIRKA // 2, VYSKA // 2), 15) # Míč jako bílý kruh
+pygame.draw.circle(okno, CERNA, (SIRKA // 2, VYSKA // 2), 15, 2) # Obrys míče
 
 #Hlavní herní smyčka
 bezi = True
