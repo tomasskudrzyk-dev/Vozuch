@@ -20,6 +20,11 @@ MODRA = (0, 0, 255)
 ZELENA = (0, 255, 0)
 TMAVE_ZELENA = (0, 100, 0)
 
+hrac_cerveni = SIRKA // 2, VYSKA // 2
+hrac_bili = SIRKA // 2, VYSKA // 2
+hrac_cerveni_rychlost = 5 
+hrac_bili_rychlost = 5
+
 #Nastavení pozadí
 pozadi = pygame.Surface((SIRKA, VYSKA))
 pozadi.fill(TMAVE_ZELENA)
@@ -52,28 +57,28 @@ draw_goal(okno, 900, 300, 50, 200, BILA, SEDA)  # Pravá branka
 
 #Vykreslení 6 fotbalistů, kteří budou rozestaveni na levé polovině hřiště
 for i in range(6):
-    x = random.randint(50, SIRKA // 2 - 50)
-    y = random.randint(100, VYSKA - 100)
-    pygame.draw.circle(okno, CERVENA, (x, y), 20) # Fotbalista jako červený kruh
-    pygame.draw.circle(okno, CERNA, (x, y), 20, 2) # Obrys fotbalisty
+    hrac_cerveni_x = random.randint(50, SIRKA // 2 - 50)
+    hrac_cerveni_y = random.randint(100, VYSKA - 100)
+    pygame.draw.circle(okno, CERVENA, (hrac_cerveni_x, hrac_cerveni_y), 20) # Fotbalista jako červený kruh
+    pygame.draw.circle(okno, CERNA, (hrac_cerveni_x, hrac_cerveni_y), 20, 2) # Obrys fotbalisty
 
     #Každý fotbalista bude mít na sobě napsané jekékoliv číslo od 1 do 99
     cislo = random.randint(1, 99)
     text = pismo.render(str(cislo), True, BILA)
-    text_rect = text.get_rect(center=(x, y))
+    text_rect = text.get_rect(center=(hrac_cerveni_x, hrac_cerveni_y))
     okno.blit(text, text_rect)
 
 #Vykreslení 6 fotbalistů, kteří budou rozestaveni na pravé polovině hřiště
 for i in range(6):
-    x = random.randint(SIRKA // 2 + 50, SIRKA - 50)
-    y = random.randint(100, VYSKA - 100)
-    pygame.draw.circle(okno, BILA, (x, y), 20) # Fotbalista jako modrý kruh
-    pygame.draw.circle(okno, CERNA, (x, y), 20, 2) # Obrys fotbalisty
+    hrac_bili_x = random.randint(SIRKA // 2 + 50, SIRKA - 50)
+    hrac_bili_y = random.randint(100, VYSKA - 100)
+    pygame.draw.circle(okno, BILA, (hrac_bili_x, hrac_bili_y), 20) # Fotbalista jako bílý kruh
+    pygame.draw.circle(okno, CERNA, (hrac_bili_x, hrac_bili_y), 20, 2) # Obrys fotbalisty
 
     #Každý fotbalista bude mít na sobě napsané jekékoliv číslo od 1 do 99
     cislo = random.randint(1, 99)
     text = pismo.render(str(cislo), True, CERVENA)
-    text_rect = text.get_rect(center=(x, y))
+    text_rect = text.get_rect(center=(hrac_bili_x, hrac_bili_y))
     okno.blit(text, text_rect)
 
     #přidání scoreboardu
@@ -85,12 +90,37 @@ okno.blit(scoreboard_text, scoreboard_rect)
 pygame.draw.circle(okno, BILA, (SIRKA // 2, VYSKA // 2), 15) # Míč jako bílý kruh
 pygame.draw.circle(okno, CERNA, (SIRKA // 2, VYSKA // 2), 15, 2) # Obrys míče
 
+#seznam hráčů červeného týmu
+hraci_cerveni = [1, 2, 3, 4, 5, 6]
+#seznam hráčů bílého týmu
+hraci_bili = [1, 2, 3, 4, 5, 6]
+
 #Hlavní herní smyčka
 bezi = True
 while bezi:
-    for udalost in pygame.event.get():
-        if udalost.type == pygame.QUIT:
+    for udalost in pygame.event.get(): #získání všech událostí
+        if udalost.type == pygame.QUIT: #pokud uživatel zavře okno
             bezi = False
+        klavesy = pygame.key.get_pressed() #získání stisknutých kláves
+        if klavesy[pygame.K_w]:
+            hrac_cerveni_rychlost = 5
+        if klavesy[pygame.K_s]:
+            hrac_cerveni_rychlost = -5
+        if klavesy[pygame.K_a]:
+            hrac_cerveni_rychlost = -5
+        if klavesy[pygame.K_d]:
+            hrac_cerveni_rychlost = 5
+
+        klavesy = pygame.key.get_pressed() #získání stisknutých kláves
+        if klavesy[pygame.K_UP]:
+            hrac_bili_rychlost = 5
+        if klavesy[pygame.K_DOWN]:
+            hrac_bili_rychlost = -5
+        if klavesy[pygame.K_LEFT]:
+            hrac_bili_rychlost = -5
+        if klavesy[pygame.K_RIGHT]:
+            hrac_bili_rychlost = 5
+
     #aktualizace obrazovky
     pygame.display.flip()# Aktualizace okna
     #regulace FPS

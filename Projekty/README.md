@@ -46,3 +46,18 @@ V této hře je za úkolem vytvořit řadu tří stejných symbolů na hrací pl
 Ovládání
 Hra se ovládá velmi jednoduše – kliknutím levým tlačítkem myši na prázdné pole, kam chce hráč umístit svůj symbol.
 
+Football
+Popis
+V této hře je za úkolem dát co nejvíce gólů. V týmu je 6 hráčů a každý hráč má na sobě své náhodně vygenerované číslo, tým na levé straně okna má červenou barvu a tým na pravé straně okna má bílou barvu
+
+Ovládání
+Stisknutím klávesy W se hráč týmu červené barvy pohybuje směrem nahoru
+Stisknutím klávesy A se hráč týmu červené barvy pohybuje směrem doleva
+Stusknutím klávesy S se hráč týmu červené barvy pohybuje směrem dolů
+Stisknutím klávesy D se hráč týmu červené barvy pohybuje směrem doprava
+
+Stisknutím klávesy šipka nahoru se hráč týmu bílé barvy pohybuje směrem nahoru
+Stisknutím klávesy šipka doleva se hráč týmu bílé barvy pohybuje směrem doleva
+Stisknutím klávesy šipka dolů se hráč týmu bílé barvy pohybuje směrem dolů
+Stisknutám klávesy šipka dolů se hráč týmu bílé barvy pohybuje směrem dolů
+
