@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import math
 
 pygame.init()  # Inicializace pygame modulu
 hodiny = pygame.time.Clock()
@@ -76,6 +77,11 @@ for i in range(6):
 # Scoreboard / míč (statické pro teď)
 score = (0, 0)
 ball_pos = [SIRKA // 2, VYSKA // 2]
+ball_vel = [0, 0]
+BALL_SPEED = 12
+BALL_FRICTION = 0.92
+BALL_RADIUS = 15
+PLAYER_RADIUS = 20
 
 # Hráč, kterého ovládáme v červeném týmu (index 0)
 ovladany_cerveny_idx = 0
@@ -110,35 +116,86 @@ while bezi:
     klavesy = pygame.key.get_pressed()
     # WASD pro červený tým (ovládá hrac s indexem ovladany_cerveny_idx)
     player = hraci_cerveni[ovladany_cerveny_idx]
+    red_move = [0, 0]
     if klavesy[pygame.K_w]:
         player["y"] -= rychlost
+        red_move[1] = -rychlost
     if klavesy[pygame.K_s]:
         player["y"] += rychlost
+        red_move[1] = rychlost
     if klavesy[pygame.K_a]:
         player["x"] -= rychlost
+        red_move[0] = -rychlost
     if klavesy[pygame.K_d]:
         player["x"] += rychlost
+        red_move[0] = rychlost
 
     # Šipky pro bílý tým (ovládá vybraného bílého hráče)
     player_b = hraci_bili[ovladany_bily_idx]
+    white_move = [0, 0]
     if klavesy[pygame.K_UP]:
         player_b["y"] -= rychlost
+        white_move[1] = -rychlost
     if klavesy[pygame.K_DOWN]:
         player_b["y"] += rychlost
+        white_move[1] = rychlost
     if klavesy[pygame.K_LEFT]:
         player_b["x"] -= rychlost
+        white_move[0] = -rychlost
     if klavesy[pygame.K_RIGHT]:
         player_b["x"] += rychlost
+        white_move[0] = rychlost
 
     # Ošetření hranic hřiště (aby hráči nevytékali)
-    min_x = 50 + 20
-    max_x = SIRKA - 50 - 20
-    min_y = 50 + 20
-    max_y = VYSKA - 50 - 20
+    min_x = 50 + PLAYER_RADIUS
+    max_x = SIRKA - 50 - PLAYER_RADIUS
+    min_y = 50 + PLAYER_RADIUS
+    max_y = VYSKA - 50 - PLAYER_RADIUS
     for t in (hraci_cerveni, hraci_bili):
         for h in t:
             h["x"] = max(min_x, min(max_x, h["x"]))
             h["y"] = max(min_y, min(max_y, h["y"]))
+
+    # Kolidace hráče s míčem a kopnutí
+    def kick_ball(player, move):
+        if move == [0, 0]:
+            return
+        dx = ball_pos[0] - player["x"]
+        dy = ball_pos[1] - player["y"]
+        distance = math.hypot(dx, dy)
+        if distance <= PLAYER_RADIUS + BALL_RADIUS:
+            direction_x, direction_y = move
+            magnitude = math.hypot(direction_x, direction_y)
+            if magnitude > 0:
+                ball_vel[0] = direction_x / magnitude * BALL_SPEED
+                ball_vel[1] = direction_y / magnitude * BALL_SPEED
+
+    kick_ball(player, red_move)
+    kick_ball(player_b, white_move)
+
+    # Aktualizace pozice míče podle rychlosti
+    ball_pos[0] += ball_vel[0]
+    ball_pos[1] += ball_vel[1]
+    ball_vel[0] *= BALL_FRICTION
+    ball_vel[1] *= BALL_FRICTION
+    if abs(ball_vel[0]) < 0.05:
+        ball_vel[0] = 0
+    if abs(ball_vel[1]) < 0.05:
+        ball_vel[1] = 0
+
+    # Ošetření hranic hřiště pro míč
+    if ball_pos[0] < 50 + BALL_RADIUS:
+        ball_pos[0] = 50 + BALL_RADIUS
+        ball_vel[0] *= -0.5
+    if ball_pos[0] > SIRKA - 50 - BALL_RADIUS:
+        ball_pos[0] = SIRKA - 50 - BALL_RADIUS
+        ball_vel[0] *= -0.5
+    if ball_pos[1] < 50 + BALL_RADIUS:
+        ball_pos[1] = 50 + BALL_RADIUS
+        ball_vel[1] *= -0.5
+    if ball_pos[1] > VYSKA - 50 - BALL_RADIUS:
+        ball_pos[1] = VYSKA - 50 - BALL_RADIUS
+        ball_vel[1] *= -0.5
 
     # Překreslení scény
     draw_field(okno)
