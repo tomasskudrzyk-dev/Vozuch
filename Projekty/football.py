@@ -114,6 +114,13 @@ while bezi:
                         ovladany_cerveny_idx = idx
 
     klavesy = pygame.key.get_pressed()
+    # Uložíme předchozí pozice hráčů a míče pro vyhodnocení, odkud vstoupili do oblasti branky
+    prev_positions = {}
+    for idx, h in enumerate(hraci_cerveni):
+        prev_positions[("red", idx)] = (h["x"], h["y"])
+    for idx, h in enumerate(hraci_bili):
+        prev_positions[("white", idx)] = (h["x"], h["y"])
+    prev_ball_pos = (ball_pos[0], ball_pos[1])
     # WASD pro červený tým (ovládá hrac s indexem ovladany_cerveny_idx)
     player = hraci_cerveni[ovladany_cerveny_idx]
     red_move = [0, 0]
@@ -233,6 +240,78 @@ while bezi:
     scoreboard_text = pismo.render(f"Skóre: {score[0]} - {score[1]}", True, BILA)
     scoreboard_rect = scoreboard_text.get_rect(center=(SIRKA // 2, 30))
     okno.blit(scoreboard_text, scoreboard_rect)
+
+    # Brankové obdélníky
+    left_goal = pygame.Rect(50, 300, 50, 200)
+    right_goal = pygame.Rect(900, 300, 50, 200)
+
+    # --- Míč: povolit vstup/exit pouze přes přední otvor branky ---
+    prev_ball_inside_left = left_goal.collidepoint(prev_ball_pos)
+    prev_ball_inside_right = right_goal.collidepoint(prev_ball_pos)
+    ball_inside_left = left_goal.collidepoint(ball_pos[0], ball_pos[1])
+    ball_inside_right = right_goal.collidepoint(ball_pos[0], ball_pos[1])
+
+    # Vstup do levé branky povolen jen pokud míč přišel zepředu (z pole, tedy z x >= right)
+    if ball_inside_left and not prev_ball_inside_left:
+        if prev_ball_pos[0] < left_goal.right:
+            ball_pos[0], ball_pos[1] = prev_ball_pos
+            ball_vel[0] *= -0.5
+            ball_vel[1] *= -0.5
+
+    # Opouštění levé branky: povolit jen přes přední otvor (x >= right)
+    if not ball_inside_left and prev_ball_inside_left:
+        if ball_pos[0] < left_goal.right:
+            ball_pos[0], ball_pos[1] = prev_ball_pos
+            ball_vel[0] *= -0.5
+            ball_vel[1] *= -0.5
+
+    # Vstup do pravé branky povolen jen pokud míč přišel zepředu (z pole, tedy z x <= left)
+    if ball_inside_right and not prev_ball_inside_right:
+        if prev_ball_pos[0] > right_goal.left:
+            ball_pos[0], ball_pos[1] = prev_ball_pos
+            ball_vel[0] *= -0.5
+            ball_vel[1] *= -0.5
+
+    # Opouštění pravé branky: povolit jen přes přední otvor (x <= left)
+    if not ball_inside_right and prev_ball_inside_right:
+        if ball_pos[0] > right_goal.left:
+            ball_pos[0], ball_pos[1] = prev_ball_pos
+            ball_vel[0] *= -0.5
+            ball_vel[1] *= -0.5
+
+    # --- Hráči: povolit vstup i výstup pouze přes přední otvor branky ---
+    def handle_player_goal_transition(hrac, prev_x, prev_y, goal_rect, is_left_goal):
+        now_inside = goal_rect.collidepoint(hrac["x"], hrac["y"])
+        prev_inside = goal_rect.collidepoint(prev_x, prev_y)
+        # Vstup (outside -> inside)
+        if now_inside and not prev_inside:
+            if is_left_goal:
+                # povolit jen pokud přišel z předu (pól směrem doprava)
+                if prev_x < goal_rect.right:
+                    hrac["x"], hrac["y"] = prev_x, prev_y
+            else:
+                if prev_x > goal_rect.left:
+                    hrac["x"], hrac["y"] = prev_x, prev_y
+        # Výstup (inside -> outside)
+        if not now_inside and prev_inside:
+            if is_left_goal:
+                # povolit jen pokud vystoupil přes přední otvor (x >= right)
+                if hrac["x"] < goal_rect.right:
+                    hrac["x"], hrac["y"] = prev_x, prev_y
+            else:
+                if hrac["x"] > goal_rect.left:
+                    hrac["x"], hrac["y"] = prev_x, prev_y
+
+    for idx, hrac in enumerate(hraci_cerveni):
+        prev_x, prev_y = prev_positions[("red", idx)]
+        handle_player_goal_transition(hrac, prev_x, prev_y, left_goal, True)
+        handle_player_goal_transition(hrac, prev_x, prev_y, right_goal, False)
+
+    for idx, hrac in enumerate(hraci_bili):
+        prev_x, prev_y = prev_positions[("white", idx)]
+        handle_player_goal_transition(hrac, prev_x, prev_y, left_goal, True)
+        handle_player_goal_transition(hrac, prev_x, prev_y, right_goal, False)
+
 
     pygame.display.flip()
     hodiny.tick(60)
