@@ -74,6 +74,12 @@ for i in range(6):
     }
     hraci_bili.append(hrac)
 
+# Uložení startovních pozic hráčů pro reset po gólu
+initial_positions = {
+    "red": [(hrac["x"], hrac["y"]) for hrac in hraci_cerveni],
+    "white": [(hrac["x"], hrac["y"]) for hrac in hraci_bili],
+}
+
 # Scoreboard / míč (statické pro teď)
 score = (0, 0)
 ball_pos = [SIRKA // 2, VYSKA // 2]
@@ -312,6 +318,33 @@ while bezi:
         handle_player_goal_transition(hrac, prev_x, prev_y, left_goal, True)
         handle_player_goal_transition(hrac, prev_x, prev_y, right_goal, False)
 
+        #Když je míč v brance, zobrazí se text "Gól!" a po 2 sekundách se míč vrátí na střed
+    if ball_inside_left:
+        score = (score[0], score[1] + 1)
+        gol_text = pismo.render("Gól pro bílé!", True, BILA)
+        gol_rect = gol_text.get_rect(center=(SIRKA // 2, VYSKA // 2))
+        okno.blit(gol_text, gol_rect)
+        pygame.display.flip()
+        pygame.time.delay(2000)
+        ball_pos = [SIRKA // 2, VYSKA // 2]
+        ball_vel = [0, 0]
+
+    if ball_inside_right:
+        score = (score[0] + 1, score[1])
+        gol_text = pismo.render("Gól pro červené!", True, BILA)
+        gol_rect = gol_text.get_rect(center=(SIRKA // 2, VYSKA // 2))
+        okno.blit(gol_text, gol_rect)
+        pygame.display.flip()
+        pygame.time.delay(2000)
+        ball_pos = [SIRKA // 2, VYSKA // 2]
+        ball_vel = [0, 0]
+
+    # Po gólu se hráči resetují na své původní pozice
+    if ball_inside_left or ball_inside_right:
+        for idx, hrac in enumerate(hraci_cerveni):
+            hrac["x"], hrac["y"] = initial_positions["red"][idx]
+        for idx, hrac in enumerate(hraci_bili):
+            hrac["x"], hrac["y"] = initial_positions["white"][idx]
 
     pygame.display.flip()
     hodiny.tick(60)
