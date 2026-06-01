@@ -74,12 +74,6 @@ for i in range(6):
     }
     hraci_bili.append(hrac)
 
-# Uložení startovních pozic hráčů pro reset po gólu
-initial_positions = {
-    "red": [(hrac["x"], hrac["y"]) for hrac in hraci_cerveni],
-    "white": [(hrac["x"], hrac["y"]) for hrac in hraci_bili],
-}
-
 # Scoreboard / míč (statické pro teď)
 score = (0, 0)
 ball_pos = [SIRKA // 2, VYSKA // 2]
@@ -88,6 +82,9 @@ BALL_SPEED = 12
 BALL_FRICTION = 0.92
 BALL_RADIUS = 15
 PLAYER_RADIUS = 20
+GOAL_PAUSE_MS = 2000
+goal_message = ""
+goals_pause_until = 0
 
 # Hráč, kterého ovládáme v červeném týmu (index 0)
 ovladany_cerveny_idx = 0
@@ -102,24 +99,22 @@ while bezi:
         if udalost.type == pygame.QUIT:
             bezi = False
         elif udalost.type == pygame.KEYDOWN:
-            mods = pygame.key.get_mods()
-            # Tab cycles controlled red players
-            if udalost.key == pygame.K_TAB:
-                ovladany_cerveny_idx = (ovladany_cerveny_idx + 1) % len(hraci_cerveni)
-            # Pressing Shift alone cycles white players (either shift key)
-            elif udalost.key in (pygame.K_LSHIFT, pygame.K_RSHIFT):
-                ovladany_bily_idx = (ovladany_bily_idx + 1) % len(hraci_bili)
-            # Number keys 1-6 to select specific player: Shift + number selects white, otherwise red
-            elif udalost.key in (pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6):
+            # Top-row number keys 1-6 select red team players
+            if udalost.key in (pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6):
                 idx = udalost.key - pygame.K_1
-                if mods & pygame.KMOD_SHIFT:
-                    if 0 <= idx < len(hraci_bili):
-                        ovladany_bily_idx = idx
-                else:
-                    if 0 <= idx < len(hraci_cerveni):
-                        ovladany_cerveny_idx = idx
+                if 0 <= idx < len(hraci_cerveni):
+                    ovladany_cerveny_idx = idx
+            # Numpad number keys 1-6 select white team players
+            elif udalost.key in (pygame.K_KP1, pygame.K_KP2, pygame.K_KP3, pygame.K_KP4, pygame.K_KP5, pygame.K_KP6):
+                idx = udalost.key - pygame.K_KP1
+                if 0 <= idx < len(hraci_bili):
+                    ovladany_bily_idx = idx
 
     klavesy = pygame.key.get_pressed()
+    current_time = pygame.time.get_ticks()
+    if current_time >= goals_pause_until:
+        goal_message = ""
+    is_goal_pause = current_time < goals_pause_until
     # Uložíme předchozí pozice hráčů a míče pro vyhodnocení, odkud vstoupili do oblasti branky
     prev_positions = {}
     for idx, h in enumerate(hraci_cerveni):
@@ -251,18 +246,55 @@ while bezi:
     left_goal = pygame.Rect(50, 300, 50, 200)
     right_goal = pygame.Rect(900, 300, 50, 200)
 
+    if is_goal_pause:
+        draw_field(okno)
+        for idx, hrac in enumerate(hraci_cerveni):
+            pygame.draw.circle(okno, CERVENA, (hrac["x"], hrac["y"]), 20)
+            pygame.draw.circle(okno, CERNA, (hrac["x"], hrac["y"]), 20, 2)
+            if idx == ovladany_cerveny_idx:
+                pygame.draw.circle(okno, ZELENA, (hrac["x"], hrac["y"]), 24, 3)
+            cislo_text = pismo_maly.render(str(hrac["dres"]), True, BILA)
+            cislo_rect = cislo_text.get_rect(center=(hrac["x"], hrac["y"]))
+            okno.blit(cislo_text, cislo_rect)
+            text = pismo_maly.render(f"Hráč {hrac['cislo']}", True, BILA)
+            text_rect = text.get_rect(center=(hrac["x"], hrac["y"] + 30))
+            okno.blit(text, text_rect)
+        for idx, hrac in enumerate(hraci_bili):
+            pygame.draw.circle(okno, BILA, (hrac["x"], hrac["y"]), 20)
+            pygame.draw.circle(okno, CERNA, (hrac["x"], hrac["y"]), 20, 2)
+            if idx == ovladany_bily_idx:
+                pygame.draw.circle(okno, MODRA, (hrac["x"], hrac["y"]), 24, 3)
+            cislo_text = pismo_maly.render(str(hrac["dres"]), True, CERNA)
+            cislo_rect = cislo_text.get_rect(center=(hrac["x"], hrac["y"]))
+            okno.blit(cislo_text, cislo_rect)
+            text = pismo_maly.render(f"Hráč {hrac['cislo']}", True, CERNA)
+            text_rect = text.get_rect(center=(hrac["x"], hrac["y"] + 30))
+            okno.blit(text, text_rect)
+        pygame.draw.circle(okno, BILA, (ball_pos[0], ball_pos[1]), 15)
+        pygame.draw.circle(okno, CERNA, (ball_pos[0], ball_pos[1]), 15, 2)
+        scoreboard_text = pismo.render(f"Skóre: {score[0]} - {score[1]}", True, BILA)
+        scoreboard_rect = scoreboard_text.get_rect(center=(SIRKA // 2, 30))
+        okno.blit(scoreboard_text, scoreboard_rect)
+        if goal_message:
+            message_text = pismo.render(goal_message, True, BILA)
+            message_rect = message_text.get_rect(center=(SIRKA // 2, VYSKA // 2))
+            okno.blit(message_text, message_rect)
+        pygame.display.flip()
+        hodiny.tick(60)
+        continue
+
     # --- Míč: povolit vstup/exit pouze přes přední otvor branky ---
     prev_ball_inside_left = left_goal.collidepoint(prev_ball_pos)
     prev_ball_inside_right = right_goal.collidepoint(prev_ball_pos)
     ball_inside_left = left_goal.collidepoint(ball_pos[0], ball_pos[1])
     ball_inside_right = right_goal.collidepoint(ball_pos[0], ball_pos[1])
-
     # Vstup do levé branky povolen jen pokud míč přišel zepředu (z pole, tedy z x >= right)
     if ball_inside_left and not prev_ball_inside_left:
         if prev_ball_pos[0] < left_goal.right:
             ball_pos[0], ball_pos[1] = prev_ball_pos
             ball_vel[0] *= -0.5
             ball_vel[1] *= -0.5
+
 
     # Opouštění levé branky: povolit jen přes přední otvor (x >= right)
     if not ball_inside_left and prev_ball_inside_left:
@@ -318,33 +350,33 @@ while bezi:
         handle_player_goal_transition(hrac, prev_x, prev_y, left_goal, True)
         handle_player_goal_transition(hrac, prev_x, prev_y, right_goal, False)
 
-        #Když je míč v brance, zobrazí se text "Gól!" a po 2 sekundách se míč vrátí na střed
+    # Když bude míč uvnitř levé branky bude gól a přičte se bod pro bílý tým
     if ball_inside_left:
         score = (score[0], score[1] + 1)
-        gol_text = pismo.render("Gól pro bílé!", True, BILA)
-        gol_rect = gol_text.get_rect(center=(SIRKA // 2, VYSKA // 2))
-        okno.blit(gol_text, gol_rect)
-        pygame.display.flip()
-        pygame.time.delay(2000)
+        goal_message = "Gól! Bílý tým skóroval."
+        goals_pause_until = pygame.time.get_ticks() + GOAL_PAUSE_MS
+        # Reset míče
         ball_pos = [SIRKA // 2, VYSKA // 2]
         ball_vel = [0, 0]
+        # Reset hráčů na původní pozice
+        for idx, h in enumerate(hraci_cerveni):
+            h["x"], h["y"] = prev_positions[("red", idx)]
+        for idx, h in enumerate(hraci_bili):
+            h["x"], h["y"] = prev_positions[("white", idx)]
 
+    # Když bude míč uvnitř pravé branky bude gól a přičte se bod pro červený tým
     if ball_inside_right:
         score = (score[0] + 1, score[1])
-        gol_text = pismo.render("Gól pro červené!", True, BILA)
-        gol_rect = gol_text.get_rect(center=(SIRKA // 2, VYSKA // 2))
-        okno.blit(gol_text, gol_rect)
-        pygame.display.flip()
-        pygame.time.delay(2000)
+        goal_message = "Gól! Červený tým skóroval."
+        goals_pause_until = pygame.time.get_ticks() + GOAL_PAUSE_MS
+        # Reset míče
         ball_pos = [SIRKA // 2, VYSKA // 2]
         ball_vel = [0, 0]
-
-    # Po gólu se hráči resetují na své původní pozice
-    if ball_inside_left or ball_inside_right:
-        for idx, hrac in enumerate(hraci_cerveni):
-            hrac["x"], hrac["y"] = initial_positions["red"][idx]
-        for idx, hrac in enumerate(hraci_bili):
-            hrac["x"], hrac["y"] = initial_positions["white"][idx]
+        # Reset hráčů na původní pozice
+        for idx, h in enumerate(hraci_cerveni):
+            h["x"], h["y"] = prev_positions[("red", idx)]
+        for idx, h in enumerate(hraci_bili):
+            h["x"], h["y"] = prev_positions[("white", idx)]
 
     pygame.display.flip()
     hodiny.tick(60)
