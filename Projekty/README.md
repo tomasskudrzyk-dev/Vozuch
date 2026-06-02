@@ -55,11 +55,12 @@ Stisknutím klávesy W se hráč týmu červené barvy pohybuje směrem nahoru
 Stisknutím klávesy A se hráč týmu červené barvy pohybuje směrem doleva
 Stusknutím klávesy S se hráč týmu červené barvy pohybuje směrem dolů
 Stisknutím klávesy D se hráč týmu červené barvy pohybuje směrem doprava
-Stisknutím klávesy Tab se přepne ovládaný hráč červeného týmu
+Hráč týmu na levé straně se přepne pomocí čísel v horní číselné řadě, každý hráč má své číslo od 1 do 6, například Hráč 2 a stisknutím klávesy s číslem 2 v horní číselné řadě se přepne na hráče 2 
 
 Stisknutím klávesy šipka nahoru se hráč týmu bílé barvy pohybuje směrem nahoru
 Stisknutím klávesy šipka doleva se hráč týmu bílé barvy pohybuje směrem doleva
 Stisknutím klávesy šipka dolů se hráč týmu bílé barvy pohybuje směrem dolů
 Stisknutám klávesy šipka dolů se hráč týmu bílé barvy pohybuje směrem dolů
 Stisknutím klávesy Shift se přepne ovládaný hráč bílého týmu
+Hráč týmu na pravé straně se přepne pomocí čísel 1 až 6, každý hráč má své číslo od 1 do 6, například Hráč 2 a stisknutím klávesy s číslem 2 se přepne na hráče 2
 

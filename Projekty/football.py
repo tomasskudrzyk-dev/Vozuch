@@ -74,6 +74,9 @@ for i in range(6):
     }
     hraci_bili.append(hrac)
 
+original_red_positions = [(h["x"], h["y"]) for h in hraci_cerveni]
+original_white_positions = [(h["x"], h["y"]) for h in hraci_bili]
+
 # Scoreboard / míč (statické pro teď)
 score = (0, 0)
 ball_pos = [SIRKA // 2, VYSKA // 2]
@@ -82,7 +85,7 @@ BALL_SPEED = 12
 BALL_FRICTION = 0.92
 BALL_RADIUS = 15
 PLAYER_RADIUS = 20
-GOAL_PAUSE_MS = 2000
+GOAL_PAUSE_MS = 1000
 goal_message = ""
 goals_pause_until = 0
 
@@ -122,88 +125,90 @@ while bezi:
     for idx, h in enumerate(hraci_bili):
         prev_positions[("white", idx)] = (h["x"], h["y"])
     prev_ball_pos = (ball_pos[0], ball_pos[1])
-    # WASD pro červený tým (ovládá hrac s indexem ovladany_cerveny_idx)
-    player = hraci_cerveni[ovladany_cerveny_idx]
+
     red_move = [0, 0]
-    if klavesy[pygame.K_w]:
-        player["y"] -= rychlost
-        red_move[1] = -rychlost
-    if klavesy[pygame.K_s]:
-        player["y"] += rychlost
-        red_move[1] = rychlost
-    if klavesy[pygame.K_a]:
-        player["x"] -= rychlost
-        red_move[0] = -rychlost
-    if klavesy[pygame.K_d]:
-        player["x"] += rychlost
-        red_move[0] = rychlost
-
-    # Šipky pro bílý tým (ovládá vybraného bílého hráče)
-    player_b = hraci_bili[ovladany_bily_idx]
     white_move = [0, 0]
-    if klavesy[pygame.K_UP]:
-        player_b["y"] -= rychlost
-        white_move[1] = -rychlost
-    if klavesy[pygame.K_DOWN]:
-        player_b["y"] += rychlost
-        white_move[1] = rychlost
-    if klavesy[pygame.K_LEFT]:
-        player_b["x"] -= rychlost
-        white_move[0] = -rychlost
-    if klavesy[pygame.K_RIGHT]:
-        player_b["x"] += rychlost
-        white_move[0] = rychlost
+    if not is_goal_pause:
+        # WASD pro červený tým (ovládá hrac s indexem ovladany_cerveny_idx)
+        player = hraci_cerveni[ovladany_cerveny_idx]
+        if klavesy[pygame.K_w]:
+            player["y"] -= rychlost
+            red_move[1] = -rychlost
+        if klavesy[pygame.K_s]:
+            player["y"] += rychlost
+            red_move[1] = rychlost
+        if klavesy[pygame.K_a]:
+            player["x"] -= rychlost
+            red_move[0] = -rychlost
+        if klavesy[pygame.K_d]:
+            player["x"] += rychlost
+            red_move[0] = rychlost
 
-    # Ošetření hranic hřiště (aby hráči nevytékali)
-    min_x = 50 + PLAYER_RADIUS
-    max_x = SIRKA - 50 - PLAYER_RADIUS
-    min_y = 50 + PLAYER_RADIUS
-    max_y = VYSKA - 50 - PLAYER_RADIUS
-    for t in (hraci_cerveni, hraci_bili):
-        for h in t:
-            h["x"] = max(min_x, min(max_x, h["x"]))
-            h["y"] = max(min_y, min(max_y, h["y"]))
+        # Šipky pro bílý tým (ovládá vybraného bílého hráče)
+        player_b = hraci_bili[ovladany_bily_idx]
+        if klavesy[pygame.K_UP]:
+            player_b["y"] -= rychlost
+            white_move[1] = -rychlost
+        if klavesy[pygame.K_DOWN]:
+            player_b["y"] += rychlost
+            white_move[1] = rychlost
+        if klavesy[pygame.K_LEFT]:
+            player_b["x"] -= rychlost
+            white_move[0] = -rychlost
+        if klavesy[pygame.K_RIGHT]:
+            player_b["x"] += rychlost
+            white_move[0] = rychlost
 
-    # Kolidace hráče s míčem a kopnutí
-    def kick_ball(player, move):
-        if move == [0, 0]:
-            return
-        dx = ball_pos[0] - player["x"]
-        dy = ball_pos[1] - player["y"]
-        distance = math.hypot(dx, dy)
-        if distance <= PLAYER_RADIUS + BALL_RADIUS:
-            direction_x, direction_y = move
-            magnitude = math.hypot(direction_x, direction_y)
-            if magnitude > 0:
-                ball_vel[0] = direction_x / magnitude * BALL_SPEED
-                ball_vel[1] = direction_y / magnitude * BALL_SPEED
+        # Ošetření hranic hřiště (aby hráči nevytékali)
+        min_x = 50 + PLAYER_RADIUS
+        max_x = SIRKA - 50 - PLAYER_RADIUS
+        min_y = 50 + PLAYER_RADIUS
+        max_y = VYSKA - 50 - PLAYER_RADIUS
+        for t in (hraci_cerveni, hraci_bili):
+            for h in t:
+                h["x"] = max(min_x, min(max_x, h["x"]))
+                h["y"] = max(min_y, min(max_y, h["y"]))
 
-    kick_ball(player, red_move)
-    kick_ball(player_b, white_move)
+        # Kolidace hráče s míčem a kopnutí
+        def kick_ball(player, move):
+            if move == [0, 0]:
+                return
+            dx = ball_pos[0] - player["x"]
+            dy = ball_pos[1] - player["y"]
+            distance = math.hypot(dx, dy)
+            if distance <= PLAYER_RADIUS + BALL_RADIUS:
+                direction_x, direction_y = move
+                magnitude = math.hypot(direction_x, direction_y)
+                if magnitude > 0:
+                    ball_vel[0] = direction_x / magnitude * BALL_SPEED
+                    ball_vel[1] = direction_y / magnitude * BALL_SPEED
 
-    # Aktualizace pozice míče podle rychlosti
-    ball_pos[0] += ball_vel[0]
-    ball_pos[1] += ball_vel[1]
-    ball_vel[0] *= BALL_FRICTION
-    ball_vel[1] *= BALL_FRICTION
-    if abs(ball_vel[0]) < 0.05:
-        ball_vel[0] = 0
-    if abs(ball_vel[1]) < 0.05:
-        ball_vel[1] = 0
+        kick_ball(player, red_move)
+        kick_ball(player_b, white_move)
 
-    # Ošetření hranic hřiště pro míč
-    if ball_pos[0] < 50 + BALL_RADIUS:
-        ball_pos[0] = 50 + BALL_RADIUS
-        ball_vel[0] *= -0.5
-    if ball_pos[0] > SIRKA - 50 - BALL_RADIUS:
-        ball_pos[0] = SIRKA - 50 - BALL_RADIUS
-        ball_vel[0] *= -0.5
-    if ball_pos[1] < 50 + BALL_RADIUS:
-        ball_pos[1] = 50 + BALL_RADIUS
-        ball_vel[1] *= -0.5
-    if ball_pos[1] > VYSKA - 50 - BALL_RADIUS:
-        ball_pos[1] = VYSKA - 50 - BALL_RADIUS
-        ball_vel[1] *= -0.5
+        # Aktualizace pozice míče podle rychlosti
+        ball_pos[0] += ball_vel[0]
+        ball_pos[1] += ball_vel[1]
+        ball_vel[0] *= BALL_FRICTION
+        ball_vel[1] *= BALL_FRICTION
+        if abs(ball_vel[0]) < 0.05:
+            ball_vel[0] = 0
+        if abs(ball_vel[1]) < 0.05:
+            ball_vel[1] = 0
+
+        # Ošetření hranic hřiště pro míč
+        if ball_pos[0] < 50 + BALL_RADIUS:
+            ball_pos[0] = 50 + BALL_RADIUS
+            ball_vel[0] *= -0.5
+        if ball_pos[0] > SIRKA - 50 - BALL_RADIUS:
+            ball_pos[0] = SIRKA - 50 - BALL_RADIUS
+            ball_vel[0] *= -0.5
+        if ball_pos[1] < 50 + BALL_RADIUS:
+            ball_pos[1] = 50 + BALL_RADIUS
+            ball_vel[1] *= -0.5
+        if ball_pos[1] > VYSKA - 50 - BALL_RADIUS:
+            ball_pos[1] = VYSKA - 50 - BALL_RADIUS
+            ball_vel[1] *= -0.5
 
     # Překreslení scény
     draw_field(okno)
@@ -350,8 +355,15 @@ while bezi:
         handle_player_goal_transition(hrac, prev_x, prev_y, left_goal, True)
         handle_player_goal_transition(hrac, prev_x, prev_y, right_goal, False)
 
-    # Když bude míč uvnitř levé branky bude gól a přičte se bod pro bílý tým
-    if ball_inside_left:
+    def front_goal_scored(prev_pos, curr_pos, goal_rect, is_left_goal):
+        if is_left_goal:
+            return (not goal_rect.collidepoint(prev_pos)) and goal_rect.collidepoint(curr_pos) and prev_pos[0] >= goal_rect.right and curr_pos[0] < goal_rect.right
+        return (not goal_rect.collidepoint(prev_pos)) and goal_rect.collidepoint(curr_pos) and prev_pos[0] <= goal_rect.left and curr_pos[0] > goal_rect.left
+
+    left_goal_scored = front_goal_scored(prev_ball_pos, ball_pos, left_goal, True)
+    right_goal_scored = front_goal_scored(prev_ball_pos, ball_pos, right_goal, False)
+
+    if left_goal_scored:
         score = (score[0], score[1] + 1)
         goal_message = "Gól! Bílý tým skóroval."
         goals_pause_until = pygame.time.get_ticks() + GOAL_PAUSE_MS
@@ -360,12 +372,11 @@ while bezi:
         ball_vel = [0, 0]
         # Reset hráčů na původní pozice
         for idx, h in enumerate(hraci_cerveni):
-            h["x"], h["y"] = prev_positions[("red", idx)]
+            h["x"], h["y"] = original_red_positions[idx]
         for idx, h in enumerate(hraci_bili):
-            h["x"], h["y"] = prev_positions[("white", idx)]
+            h["x"], h["y"] = original_white_positions[idx]
 
-    # Když bude míč uvnitř pravé branky bude gól a přičte se bod pro červený tým
-    if ball_inside_right:
+    if right_goal_scored:
         score = (score[0] + 1, score[1])
         goal_message = "Gól! Červený tým skóroval."
         goals_pause_until = pygame.time.get_ticks() + GOAL_PAUSE_MS
@@ -374,10 +385,10 @@ while bezi:
         ball_vel = [0, 0]
         # Reset hráčů na původní pozice
         for idx, h in enumerate(hraci_cerveni):
-            h["x"], h["y"] = prev_positions[("red", idx)]
+            h["x"], h["y"] = original_red_positions[idx]
         for idx, h in enumerate(hraci_bili):
-            h["x"], h["y"] = prev_positions[("white", idx)]
-
+            h["x"], h["y"] = original_white_positions[idx]
+            
     pygame.display.flip()
     hodiny.tick(60)
 
