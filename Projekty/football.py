@@ -21,6 +21,7 @@ CERVENA = (255, 0, 0)
 MODRA = (0, 0, 255)
 ZELENA = (0, 255, 0)
 TMAVE_ZELENA = (0, 100, 0)
+ZLUTA = (255, 255, 0)
 
 # Pozadí (tráva)
 pozadi = pygame.Surface((SIRKA, VYSKA))
@@ -52,26 +53,46 @@ def draw_field(surface):
 # Vytvoření hráčů (červení vlevo, bílí vpravo)
 hraci_cerveni = []
 for i in range(6):
-    hrac_cerveni_x = random.randint(50 + 20, SIRKA // 2 - 50)
-    hrac_cerveni_y = random.randint(100, VYSKA - 100)
-    hrac = {
-        "cislo": i + 1,
-        "x": hrac_cerveni_x,
-        "y": hrac_cerveni_y,
-        "dres": random.randint(1, 99)
-    }
+    # make the first player the goalkeeper and place inside the left penalty area
+    if i == 0:
+        hrac = {
+            "cislo": i + 1,
+            "x": 125,
+            "y": VYSKA // 2,
+            "dres": random.randint(1, 99),
+            "role": "goalkeeper"
+        }
+    else:
+        hrac_cerveni_x = random.randint(50 + 20, SIRKA // 2 - 50)
+        hrac_cerveni_y = random.randint(100, VYSKA - 100)
+        hrac = {
+            "cislo": i + 1,
+            "x": hrac_cerveni_x,
+            "y": hrac_cerveni_y,
+            "dres": random.randint(1, 99)
+        }
     hraci_cerveni.append(hrac)
 
 hraci_bili = []
 for i in range(6):
-    hrac_bili_x = random.randint(SIRKA // 2 + 50, SIRKA - 50 - 20)
-    hrac_bili_y = random.randint(100, VYSKA - 100)
-    hrac = {
-        "cislo": i + 1,
-        "x": hrac_bili_x,
-        "y": hrac_bili_y,
-        "dres": random.randint(1, 99)
-    }
+    # make the first white player the goalkeeper and place inside the right penalty area
+    if i == 0:
+        hrac = {
+            "cislo": i + 1,
+            "x": 875,
+            "y": VYSKA // 2,
+            "dres": random.randint(1, 99),
+            "role": "goalkeeper"
+        }
+    else:
+        hrac_bili_x = random.randint(SIRKA // 2 + 50, SIRKA - 50 - 20)
+        hrac_bili_y = random.randint(100, VYSKA - 100)
+        hrac = {
+            "cislo": i + 1,
+            "x": hrac_bili_x,
+            "y": hrac_bili_y,
+            "dres": random.randint(1, 99)
+        }
     hraci_bili.append(hrac)
 
 original_red_positions = [(h["x"], h["y"]) for h in hraci_cerveni]
@@ -88,6 +109,10 @@ PLAYER_RADIUS = 20
 GOAL_PAUSE_MS = 1000
 goal_message = ""
 goals_pause_until = 0
+
+# Penalty areas (must match drawing in draw_field)
+PENALTY_LEFT = pygame.Rect(50, 250, 150, 300)
+PENALTY_RIGHT = pygame.Rect(800, 250, 150, 300)
 
 # Hráč, kterého ovládáme v červeném týmu (index 0)
 ovladany_cerveny_idx = 0
@@ -164,10 +189,19 @@ while bezi:
         max_x = SIRKA - 50 - PLAYER_RADIUS
         min_y = 50 + PLAYER_RADIUS
         max_y = VYSKA - 50 - PLAYER_RADIUS
-        for t in (hraci_cerveni, hraci_bili):
+        # Normal players are limited to the pitch; goalkeepers limited to their penalty area
+        for tname, t in (("red", hraci_cerveni), ("white", hraci_bili)):
             for h in t:
-                h["x"] = max(min_x, min(max_x, h["x"]))
-                h["y"] = max(min_y, min(max_y, h["y"]))
+                if h.get("role") == "goalkeeper":
+                    if tname == "red":
+                        r = PENALTY_LEFT
+                    else:
+                        r = PENALTY_RIGHT
+                    h["x"] = max(r.left + PLAYER_RADIUS, min(r.right - PLAYER_RADIUS, h["x"]))
+                    h["y"] = max(r.top + PLAYER_RADIUS, min(r.bottom - PLAYER_RADIUS, h["y"]))
+                else:
+                    h["x"] = max(min_x, min(max_x, h["x"]))
+                    h["y"] = max(min_y, min(max_y, h["y"]))
 
         # Kolidace hráče s míčem a kopnutí
         def kick_ball(player, move):
@@ -220,6 +254,9 @@ while bezi:
         # zvýraznění ovládaného hráče
         if idx == ovladany_cerveny_idx:
             pygame.draw.circle(okno, ZELENA, (hrac["x"], hrac["y"]), 24, 3)
+        # zvýraznění brankáře
+        if hrac.get("role") == "goalkeeper":
+            pygame.draw.circle(okno, ZLUTA, (hrac["x"], hrac["y"]), 26, 3)
         cislo_text = pismo_maly.render(str(hrac["dres"]), True, BILA)
         cislo_rect = cislo_text.get_rect(center=(hrac["x"], hrac["y"]))
         okno.blit(cislo_text, cislo_rect)
@@ -233,6 +270,9 @@ while bezi:
         # zvýraznění ovládaného bílého hráče
         if idx == ovladany_bily_idx:
             pygame.draw.circle(okno, MODRA, (hrac["x"], hrac["y"]), 24, 3)
+        # zvýraznění brankáře
+        if hrac.get("role") == "goalkeeper":
+            pygame.draw.circle(okno, ZLUTA, (hrac["x"], hrac["y"]), 26, 3)
         cislo_text = pismo_maly.render(str(hrac["dres"]), True, CERNA)
         cislo_rect = cislo_text.get_rect(center=(hrac["x"], hrac["y"]))
         okno.blit(cislo_text, cislo_rect)
@@ -258,6 +298,8 @@ while bezi:
             pygame.draw.circle(okno, CERNA, (hrac["x"], hrac["y"]), 20, 2)
             if idx == ovladany_cerveny_idx:
                 pygame.draw.circle(okno, ZELENA, (hrac["x"], hrac["y"]), 24, 3)
+            if hrac.get("role") == "goalkeeper":
+                pygame.draw.circle(okno, ZLUTA, (hrac["x"], hrac["y"]), 26, 3)
             cislo_text = pismo_maly.render(str(hrac["dres"]), True, BILA)
             cislo_rect = cislo_text.get_rect(center=(hrac["x"], hrac["y"]))
             okno.blit(cislo_text, cislo_rect)
@@ -269,6 +311,8 @@ while bezi:
             pygame.draw.circle(okno, CERNA, (hrac["x"], hrac["y"]), 20, 2)
             if idx == ovladany_bily_idx:
                 pygame.draw.circle(okno, MODRA, (hrac["x"], hrac["y"]), 24, 3)
+            if hrac.get("role") == "goalkeeper":
+                pygame.draw.circle(okno, ZLUTA, (hrac["x"], hrac["y"]), 26, 3)
             cislo_text = pismo_maly.render(str(hrac["dres"]), True, CERNA)
             cislo_rect = cislo_text.get_rect(center=(hrac["x"], hrac["y"]))
             okno.blit(cislo_text, cislo_rect)
