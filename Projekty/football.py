@@ -220,6 +220,33 @@ while bezi:
         kick_ball(player, red_move)
         kick_ball(player_b, white_move)
 
+        def resolve_ball_player_collision(hrac):
+            dx = ball_pos[0] - hrac["x"]
+            dy = ball_pos[1] - hrac["y"]
+            distance = math.hypot(dx, dy)
+            min_dist = PLAYER_RADIUS + BALL_RADIUS
+            if distance == 0:
+                distance = 0.1
+                dx, dy = 1, 0
+            if distance < min_dist:
+                overlap = min_dist - distance
+                nx = dx / distance
+                ny = dy / distance
+                ball_pos[0] += nx * overlap
+                ball_pos[1] += ny * overlap
+                v_dot_n = ball_vel[0] * nx + ball_vel[1] * ny
+                if v_dot_n < 0:
+                    ball_vel[0] -= 2 * v_dot_n * nx
+                    ball_vel[1] -= 2 * v_dot_n * ny
+                    ball_vel[0] *= 0.8
+                    ball_vel[1] *= 0.8
+                elif abs(v_dot_n) < 0.1:
+                    ball_vel[0] += nx * 2
+                    ball_vel[1] += ny * 2
+
+        for hrac in hraci_cerveni + hraci_bili:
+            resolve_ball_player_collision(hrac)
+
         # Aktualizace pozice míče podle rychlosti
         ball_pos[0] += ball_vel[0]
         ball_pos[1] += ball_vel[1]
