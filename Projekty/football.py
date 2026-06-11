@@ -203,6 +203,29 @@ while bezi:
                     h["x"] = max(min_x, min(max_x, h["x"]))
                     h["y"] = max(min_y, min(max_y, h["y"]))
 
+        def resolve_player_collisions(players):
+            for i in range(len(players)):
+                for j in range(i + 1, len(players)):
+                    a = players[i]
+                    b = players[j]
+                    dx = b["x"] - a["x"]
+                    dy = b["y"] - a["y"]
+                    distance = math.hypot(dx, dy)
+                    min_dist = PLAYER_RADIUS * 2
+                    if distance == 0:
+                        dx, dy = 1, 0
+                        distance = 1
+                    if distance < min_dist:
+                        overlap = min_dist - distance
+                        nx = dx / distance
+                        ny = dy / distance
+                        a["x"] -= nx * overlap * 0.5
+                        a["y"] -= ny * overlap * 0.5
+                        b["x"] += nx * overlap * 0.5
+                        b["y"] += ny * overlap * 0.5
+
+        resolve_player_collisions(hraci_cerveni + hraci_bili)
+
         # Kolidace hráče s míčem a kopnutí
         def kick_ball(player, move):
             if move == [0, 0]:
