@@ -109,6 +109,7 @@ PLAYER_RADIUS = 20
 GOAL_PAUSE_MS = 1000
 goal_message = ""
 goals_pause_until = 0
+last_player_kicked = None  # Sledování, který hráč naposledy kopnul
 
 # Penalty areas (must match drawing in draw_field)
 PENALTY_LEFT = pygame.Rect(50, 250, 150, 300)
@@ -227,7 +228,8 @@ while bezi:
         resolve_player_collisions(hraci_cerveni + hraci_bili)
 
         # Kolidace hráče s míčem a kopnutí
-        def kick_ball(player, move):
+        def kick_ball(player, move, team_name):
+            global last_player_kicked
             if move == [0, 0]:
                 return
             dx = ball_pos[0] - player["x"]
@@ -239,9 +241,10 @@ while bezi:
                 if magnitude > 0:
                     ball_vel[0] = direction_x / magnitude * BALL_SPEED
                     ball_vel[1] = direction_y / magnitude * BALL_SPEED
+                    last_player_kicked = {"team": team_name, "dres": player["dres"]}
 
-        kick_ball(player, red_move)
-        kick_ball(player_b, white_move)
+        kick_ball(player, red_move, "Červený tým")
+        kick_ball(player_b, white_move, "Bílý tým")
 
         def resolve_ball_player_collision(hrac):
             dx = ball_pos[0] - hrac["x"]
@@ -375,9 +378,13 @@ while bezi:
         scoreboard_rect = scoreboard_text.get_rect(center=(SIRKA // 2, 30))
         okno.blit(scoreboard_text, scoreboard_rect)
         if goal_message:
-            message_text = pismo.render(goal_message, True, BILA)
-            message_rect = message_text.get_rect(center=(SIRKA // 2, VYSKA // 2))
-            okno.blit(message_text, message_rect)
+            # Rozdělit zprávu na řádky a vykreslit cada řádku
+            lines = goal_message.split('\n')
+            y_offset = VYSKA // 3  # Posunuto nahoru
+            for i, line in enumerate(lines):
+                message_text = pismo.render(line, True, BILA)
+                message_rect = message_text.get_rect(center=(SIRKA // 2, y_offset + i * 40))
+                okno.blit(message_text, message_rect)
         pygame.display.flip()
         hodiny.tick(60)
         continue
@@ -459,7 +466,10 @@ while bezi:
 
     if left_goal_scored:
         score = (score[0], score[1] + 1)
-        goal_message = "Gól! Bílý tým skóroval."
+        if last_player_kicked and last_player_kicked["team"] == "Bílý tým":
+            goal_message = f"Bílý tým dal gól\nHráč {last_player_kicked['dres']} dal gól"
+        else:
+            goal_message = "Bílý tým dal gól"
         goals_pause_until = pygame.time.get_ticks() + GOAL_PAUSE_MS
         # Reset míče
         ball_pos = [SIRKA // 2, VYSKA // 2]
@@ -469,10 +479,14 @@ while bezi:
             h["x"], h["y"] = original_red_positions[idx]
         for idx, h in enumerate(hraci_bili):
             h["x"], h["y"] = original_white_positions[idx]
+        last_player_kicked = None
 
     if right_goal_scored:
         score = (score[0] + 1, score[1])
-        goal_message = "Gól! Červený tým skóroval."
+        if last_player_kicked and last_player_kicked["team"] == "Červený tým":
+            goal_message = f"Červený tým dal gól\nHráč {last_player_kicked['dres']} dal gól"
+        else:
+            goal_message = "Červený tým dal gól"
         goals_pause_until = pygame.time.get_ticks() + GOAL_PAUSE_MS
         # Reset míče
         ball_pos = [SIRKA // 2, VYSKA // 2]
@@ -482,6 +496,7 @@ while bezi:
             h["x"], h["y"] = original_red_positions[idx]
         for idx, h in enumerate(hraci_bili):
             h["x"], h["y"] = original_white_positions[idx]
+        last_player_kicked = None
             
     pygame.display.flip()
     hodiny.tick(60)
